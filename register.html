@@ -11,60 +11,80 @@
     
     <style>
         :root { 
-            --active-blue: #007bff; /* สีฟ้าที่คุณต้องการ */
+            --active-blue: #007bff; 
             --navy: #1a2a6c; 
         }
 
         body { 
-            background: #f0f2f5;
+            background: #f8f9fa;
             min-height: 100vh; font-family: 'Kanit', sans-serif; 
         }
 
-        /* --- Full Screen Loading --- */
+        /* --- 1. Full Screen Loading (White) --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background: #ffffff; /* พื้นหลังขาวตามสั่ง */
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999; color: white; transition: opacity 0.5s ease;
+            z-index: 9999; transition: opacity 0.5s ease;
         }
         .spinner {
-            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3);
-            border-radius: 50%; border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite; margin-bottom: 20px;
+            width: 60px; height: 60px; 
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--active-blue); /* Spinner สีฟ้า */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #loader p { color: #666; font-weight: 400; letter-spacing: 1px; }
 
         /* --- Card Design --- */
         .reg-card { 
-            max-width: 480px; margin: 40px auto; background: #ffffff; 
-            padding: 40px 25px; border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: none; /* ซ่อนไว้ก่อนโหลดเสร็จ */
+            max-width: 480px; margin: 30px auto; background: #ffffff; 
+            padding: 35px 25px; border-radius: 25px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05); display: none;
         }
         .header-title { color: var(--navy); font-weight: 600; margin-bottom: 25px; }
 
-        /* --- Highlight ตอนพิมพ์สีฟ้า --- */
-        .form-control:focus, .ts-wrapper.focus .ts-control { 
-            border-color: var(--active-blue) !important; 
-            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25) !important;
-            outline: none;
+        /* --- Input Highlight Blue --- */
+        .form-control:focus { 
+            border-color: var(--active-blue); 
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.15);
         }
 
+        /* --- 2. Custom Tom Select (Search Dropdown) --- */
+        .ts-wrapper.single .ts-control {
+            border-radius: 10px; padding: 12px; border: 1px solid #dee2e6;
+            font-size: 1rem; transition: all 0.3s;
+        }
+        .ts-wrapper.focus .ts-control {
+            border-color: var(--active-blue) !important;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.15) !important;
+        }
+        .ts-dropdown {
+            border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #eee; margin-top: 5px;
+        }
+        .ts-dropdown .active { background-color: var(--active-blue) !important; color: #fff !important; }
+
         .profile-img { 
-            width: 100px; height: 100px; border-radius: 50%; 
-            margin-bottom: 15px; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 90px; height: 90px; border-radius: 50%; 
+            margin-bottom: 15px; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .btn-submit { 
-            background: var(--active-blue); border: none; border-radius: 12px; 
-            padding: 15px; font-weight: 600; color: white; width: 100%; margin-top: 25px;
+            background: var(--active-blue); border: none; border-radius: 15px; 
+            padding: 16px; font-weight: 600; color: white; width: 100%; margin-top: 25px;
+            transition: 0.3s;
         }
+        .btn-submit:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="spinner"></div>
-        <h4 style="letter-spacing: 2px;">CONNECTING LINE</h4>
-        <p style="font-weight: 200; opacity: 0.8;">กรุณารอสักครู่...</p>
+        <h4>Register Buzzolute LINE</h4>
+        <p>กำลังเชื่อมต่อข้อมูล...</p>
     </div>
 
     <div class="container">
@@ -72,8 +92,8 @@
             <h3 class="header-title">Register Buzzolute LINE</h3>
             
             <img id="pictureUrlDisplay" src="" class="profile-img">
-            <div id="displayNameDisplay" style="font-weight: 500; font-size: 1.1rem;">-</div>
-            <div id="userIdDisplay" style="font-size: 0.75rem; color: #bbb; margin-bottom: 25px;">-</div>
+            <div id="displayNameDisplay" style="font-weight: 500;">-</div>
+            <div id="userIdDisplay" style="font-size: 0.7rem; color: #ccc; margin-bottom: 25px;">-</div>
 
             <div class="text-start">
                 <div class="row g-3">
@@ -94,8 +114,8 @@
                         <input type="email" id="email" class="form-control" placeholder="example@email.com">
                     </div>
                     <div class="col-12">
-                        <label class="form-label">จังหวัด (พิมพ์เพื่อค้นหา)</label>
-                        <select id="province" class="form-select" placeholder="ค้นหาจังหวัด..."></select>
+                        <label class="form-label">จังหวัด</label>
+                        <select id="province" class="form-select" placeholder="เลือกหรือพิมพ์ค้นหาจังหวัด..."></select>
                     </div>
                     <div class="col-12">
                         <label class="form-label">Platinum ในสายงาน</label>
@@ -128,18 +148,24 @@
                     document.getElementById('pictureUrlDisplay').src = profile.pictureUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                     document.getElementById('userIdDisplay').innerText = profile.userId;
                     
-                    // --- Setup Searchable Province ---
+                    // Setup จังหวัด Searchable
                     const select = document.getElementById('province');
                     provinces.forEach(p => select.add(new Option(p, p)));
+                    
                     new TomSelect("#province", {
                         create: false,
-                        sortField: { field: "text", order: "asc" }
+                        maxOptions: 100,
+                        placeholder: "พิมพ์ค้นหาจังหวัด...",
+                        onDropdownOpen: () => {
+                            // ปรับให้ช่องค้นหาเลื่อนขึ้นมาเด่นชัด (ถ้าต้องการ)
+                        }
                     });
 
-                    // ปิด Loading และโชว์ Form
-                    document.getElementById('loader').style.opacity = '0';
+                    // ซ่อน Loading และโชว์ฟอร์ม
+                    const loader = document.getElementById('loader');
+                    loader.style.opacity = '0';
                     setTimeout(() => {
-                        document.getElementById('loader').style.display = 'none';
+                        loader.style.display = 'none';
                         document.getElementById('form-section').style.display = 'block';
                     }, 500);
                 }
@@ -160,7 +186,7 @@
             if (Object.values(data).some(v => !v)) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
 
             btn.disabled = true;
-            btn.innerText = 'กำลังบันทึก...';
+            btn.innerText = 'กำลังบันทึกข้อมูล...';
 
             const payload = {
                 userId: window.lineData.userId,
@@ -173,11 +199,12 @@
 
             try {
                 await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                alert('ลงทะเบียนสำเร็จ!');
+                alert('ลงทะเบียนสำเร็จ ขอบคุณครับ!');
                 liff.closeWindow();
             } catch (err) {
-                alert('ผิดพลาด');
+                alert('เกิดข้อผิดพลาด');
                 btn.disabled = false;
+                btn.innerText = 'ลงทะเบียน';
             }
         }
         initLIFF();
