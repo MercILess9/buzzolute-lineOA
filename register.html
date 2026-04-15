@@ -14,15 +14,11 @@
         :root { 
             --active-blue: #007bff; 
             --navy: #1a2a6c; 
-            --light-gray: #f8f9fa;
         }
 
-        body { 
-            background: #f4f7f6;
-            min-height: 100vh; font-family: 'Kanit', sans-serif; 
-        }
+        body { background: #f4f7f6; min-height: 100vh; font-family: 'Kanit', sans-serif; }
 
-        /* --- 1. Full Screen Loading (White) --- */
+        /* --- 1. Full Screen White Loading --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #ffffff; display: flex; flex-direction: column; 
@@ -45,39 +41,27 @@
         .form-label { font-weight: 500; color: #444; font-size: 0.9rem; margin-bottom: 8px; }
 
         /* --- Input Styles --- */
-        .form-control { 
-            border-radius: 12px; padding: 12px 15px; border: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
-        }
-        .form-control:focus { 
-            border-color: var(--active-blue); 
-            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
-        }
+        .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #e0e0e0; transition: 0.3s; }
+        .form-control:focus { border-color: var(--active-blue); box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1); }
         .readonly-input { background-color: #f9f9f9 !important; color: #888; cursor: not-allowed; }
 
-        /* --- Tom Select (Province) Customization --- */
-        .ts-wrapper.single .ts-control {
-            border-radius: 12px; padding: 12px; border: 1px solid #e0e0e0;
-        }
-        .ts-dropdown {
-            border-radius: 12px; box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            border: none; margin-top: 5px;
-        }
+        /* --- Tom Select Scroll Fix --- */
+        .ts-wrapper.single .ts-control { border-radius: 12px; padding: 12px; border: 1px solid #e0e0e0; }
+        .ts-dropdown { border-radius: 12px; border: none; box-shadow: 0 15px 30px rgba(0,0,0,0.15); margin-top: 5px; }
         .ts-dropdown-content {
-            max-height: 200px !important; /* บังคับให้ Scroll */
+            max-height: 250px !important;
             overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+            padding: 5px;
         }
-        .ts-dropdown .option { padding: 12px 15px; }
-        .ts-dropdown .active { background: var(--active-blue) !important; }
+        .ts-dropdown .option { padding: 12px 15px; border-radius: 8px; }
+        .ts-dropdown .active { background: var(--active-blue) !important; color: #fff !important; }
 
-        /* --- Button --- */
         .btn-submit { 
             background: var(--active-blue); border: none; border-radius: 15px; 
             padding: 16px; font-weight: 600; color: white; width: 100%; 
-            margin-top: 30px; transition: 0.3s;
+            margin-top: 25px; transition: 0.3s;
         }
-        
-        /* --- SweetAlert Custom Style --- */
         .swal-luxury { font-family: 'Kanit', sans-serif !important; border-radius: 20px !important; }
     </style>
 </head>
@@ -92,7 +76,7 @@
         <div id="form-section" class="reg-card text-center">
             <h3 class="header-title">Register Buzzolute LINE</h3>
             
-            <img id="pictureUrlDisplay" src="" class="profile-img" style="width: 90px; height: 90px; border-radius: 50%; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <img id="pictureUrlDisplay" src="" style="width: 90px; height: 90px; border-radius: 50%; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
             <div id="displayNameDisplay" style="font-weight: 500;">-</div>
             <div id="userIdDisplay" style="font-size: 0.7rem; color: #ccc; margin-bottom: 30px;">-</div>
 
@@ -118,13 +102,13 @@
                         <label class="form-label">จังหวัด</label>
                         <select id="province" placeholder="เลือกหรือพิมพ์ค้นหาจังหวัด..."></select>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12">
                         <label class="form-label">ประเทศ</label>
                         <input type="text" id="country" class="form-control readonly-input" value="ประเทศไทย" readonly>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12">
                         <label class="form-label">Platinum ในสายงาน</label>
-                        <input type="text" id="platinum" class="form-control" placeholder="ชื่อ Platinum">
+                        <input type="text" id="platinum" class="form-control" placeholder="ระบุชื่อ Platinum ในสายงานของท่าน">
                     </div>
                 </div>
 
@@ -153,9 +137,8 @@
                     document.getElementById('pictureUrlDisplay').src = profile.pictureUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                     document.getElementById('userIdDisplay').innerText = profile.userId;
                     
-                    // --- Setup Province Dropdown ---
                     const selectEl = document.getElementById('province');
-                    selectEl.add(new Option("", "")); // เพิ่มช่องว่างเป็นอันแรก
+                    selectEl.add(new Option("", "")); 
                     provinces.forEach(p => selectEl.add(new Option(p, p)));
                     
                     new TomSelect("#province", {
@@ -165,7 +148,6 @@
                         maxOptions: 100
                     });
 
-                    // Hide Loader
                     const loader = document.getElementById('loader');
                     loader.style.opacity = '0';
                     setTimeout(() => {
@@ -186,11 +168,10 @@
                 platinum: document.getElementById('platinum').value.trim()
             };
 
-            // --- 1. Validation Alert (Luxury Style) ---
+            // --- แจ้งเตือนข้อความสั้นตามสั่ง ---
             if (Object.values(data).some(v => !v)) {
                 Swal.fire({
-                    title: 'ข้อมูลยังไม่ครบ',
-                    text: 'กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องเพื่อสิทธิประโยชน์ของท่านครับ',
+                    title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
                     icon: 'info',
                     confirmButtonText: 'รับทราบ',
                     confirmButtonColor: '#1a2a6c',
@@ -212,22 +193,16 @@
                     country: "ประเทศไทย",
                     pin: DEFAULT_PIN
                 };
-
                 await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 
-                // --- 2. Success Alert (Luxury Style) ---
                 Swal.fire({
                     title: 'ลงทะเบียนสำเร็จ',
-                    text: 'ข้อมูลของท่านถูกบันทึกเรียบร้อยแล้ว',
                     icon: 'success',
                     showConfirmButton: false,
                     timer: 2000,
                     timerProgressBar: true,
                     customClass: { popup: 'swal-luxury' }
-                }).then(() => {
-                    liff.closeWindow();
-                });
-
+                }).then(() => liff.closeWindow());
             } catch (err) {
                 Swal.fire({ title: 'เกิดข้อผิดพลาด', text: 'กรุณาลองใหม่อีกครั้ง', icon: 'error' });
                 btn.disabled = false;
