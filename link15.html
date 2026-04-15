@@ -3,66 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buzzolute - Pack System</title>
+    <title>Buzzolute Pack System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Kanit', sans-serif; background-color: #f1f5f9; }
-        .active-tab { background-color: #1e40af !important; color: white !important; border-color: #1e40af !important; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; }
+        .active-pack { 
+            background-color: #1e40af !important; 
+            color: white !important; 
+            transform: scale(1.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-slate-50 text-slate-900">
 
-    <div class="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
-        <div class="flex overflow-x-auto p-4 gap-3 hide-scrollbar" id="tabContainer"></div>
+    <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="max-w-2xl mx-auto">
+            <div class="p-3 text-sm font-semibold text-slate-500">เลือก Pack ที่ต้องการดู:</div>
+            <div class="flex overflow-x-auto gap-3 p-4 pt-0 hide-scrollbar" id="packMenu">
+                </div>
+        </div>
     </div>
 
-    <div class="max-w-2xl mx-auto p-4 pb-20">
-        <div id="loading" class="flex flex-col items-center justify-center py-20">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-            <p class="text-slate-500 animate-pulse">กำลังดึงข้อมูลจากระบบ...</p>
+    <div class="max-w-2xl mx-auto p-4 pb-24">
+        <div id="loading" class="flex flex-col items-center justify-center py-20 text-blue-600">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-current mb-4"></div>
+            <p class="animate-pulse">กำลังโหลดข้อมูลวิดีโอ...</p>
         </div>
 
-        <div id="mainContent" class="hidden space-y-6">
-            <div id="playlistSection">
-                <a id="mainPlaylistBtn" href="#" target="_blank" class="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all">
-                    <span class="text-xl">📺</span> <span>เปิด Playlist ทั้งหมดของ Pack นี้</span>
+        <div id="mainDisplay" class="hidden space-y-6">
+            
+            <h2 id="currentPackTitle" class="text-2xl font-bold text-slate-800"></h2>
+
+            <div id="playlistArea">
+                <a id="playlistBtn" href="#" target="_blank" 
+                   class="flex items-center justify-center gap-2 w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition-all">
+                    <span>📺</span>
+                    <span>เปิดดู Playlist ทั้งหมด</span>
                 </a>
             </div>
-            <div id="videoList" class="space-y-3"></div>
+
+            <div id="videoContainer" class="space-y-3">
+                </div>
         </div>
     </div>
 
     <script src="config.js"></script>
 
-<script>
+    <script>
+        // MASTER_DATA จะเก็บข้อมูล P1-P15 ไว้ทั้งหมด
+        let MASTER_DATA = {}; 
 
-    let MASTER_DATA = {}; 
+        async function loadAllData() {
+            try {
+                // ใช้ GAS_URL จากไฟล์ config.js
+                const response = await fetch(`${GAS_URL}?type=pack`);
+                MASTER_DATA = await response.json();
+                
+                if (Object.keys(MASTER_DATA).length === 0) throw new Error("No data found");
 
-    async function init() {
-        try {
-            // ใช้ชื่อตัวแปร GAS_URL ตามที่คุณตั้งไว้ในไฟล์ config ได้เลย
-            const response = await fetch(`${GAS_URL}?type=pack`);
-            MASTER_DATA = await response.json();
-            
-            if (Object.keys(MASTER_DATA).length === 0) throw new Error("No Data");
+                renderPackMenu();
+                
+                // เริ่มต้นให้แสดง Pack 1 (P1)
+                showPack('P1');
 
-            renderTabs();
-            const urlParams = new URLSearchParams(window.location.search);
-            switchPack(urlParams.get('id') || 'P1');
-
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-        } catch (error) {
-            console.error("Fetch Error:", error);
-            document.getElementById('loading').innerHTML = `<p class="text-red-500">⚠️ โหลดข้อมูลไม่สำเร็จ</p>`;
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('mainDisplay').style.display = 'block';
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="text-red-500 text-center p-6 bg-white rounded-2xl border border-red-100">
+                        <p class="font-bold">⚠️ ไม่สามารถโหลดข้อมูลได้</p>
+                        <p class="text-xs mt-2 text-slate-400">โปรดเช็ค GAS URL และสิทธิ์การเข้าถึง (Anyone)</p>
+                    </div>
+                `;
+            }
         }
-    }
 
-    // ... ฟังก์ชัน renderTabs และ switchPack อื่นๆ เหมือนเดิม ...
-    init();
-</script>
+        // ฟังก์ชันสร้างปุ่มตัวเลข 1-15
+        function renderPackMenu() {
+            const menu = document.getElementById('packMenu');
+            // เรียงลำดับ P1, P2, ... P15
+            const keys = Object.keys(MASTER_DATA).sort((a, b) => 
+                parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, ''))
+            );
+
+            keys.forEach(id => {
+                const num = id.replace('P', ''); // แปลง P1 เป็น 1
+                const btn = document.createElement('button');
+                btn.id = `btn-${id}`;
+                btn.className = "min-w-[50px] h-[50px] bg-white border border-slate-200 rounded-xl font-bold text-slate-600 transition-all flex-shrink-0 flex items-center justify-center";
+                btn.innerText = num;
+                btn.onclick = () => showPack(id);
+                menu.appendChild(btn);
+            });
+        }
+
+        // ฟังก์ชันสลับข้อมูล Pack (Instant Change)
+        function showPack(id) {
+            const data = MASTER_DATA[id];
+            if (!data) return;
+
+            // 1. ไฮไลท์ปุ่มที่เลือก
+            document.querySelectorAll('#packMenu button').forEach(b => b.classList.remove('active-pack'));
+            const activeBtn = document.getElementById(`btn-${id}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active-pack');
+                activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+
+            // 2. อัปเดตชื่อหัวข้อ
+            document.getElementById('currentPackTitle').innerText = `Buzz Pack ${id.replace('P', '')}`;
+
+            // 3. อัปเดตลิงก์ Playlist
+            const pBtn = document.getElementById('playlistBtn');
+            if (data.playlistUrl) {
+                pBtn.href = data.playlistUrl;
+                document.getElementById('playlistArea').style.display = 'block';
+            } else {
+                document.getElementById('playlistArea').style.display = 'none';
+            }
+
+            // 4. แสดงรายการวิดีโอ
+            const container = document.getElementById('videoContainer');
+            container.innerHTML = data.videos.map(v => `
+                <a href="${v.url}" target="_blank" class="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hover:bg-blue-50/50 transition-colors group">
+                    <div class="w-10 h-10 bg-slate-100 text-slate-500 font-bold flex items-center justify-center rounded-full flex-shrink-0 text-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        ${v.no}
+                    </div>
+                    <div class="flex-grow font-medium text-slate-700 leading-snug">${v.title}</div>
+                    <div class="text-blue-500 opacity-30 group-hover:opacity-100 transition-opacity">▶️</div>
+                </a>
+            `).join('');
+        }
+
+        loadAllData();
+    </script>
 </body>
 </html>
