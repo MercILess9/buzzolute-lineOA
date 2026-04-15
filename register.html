@@ -3,66 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ลงทะเบียน Buzzolute</title>
+    <title>Buzzolute Registration</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #06c755;
-            --dark-blue: #1a2a6c;
-            --light-gray: #f4f7f9;
-        }
+        :root { --line-green: #06c755; --navy: #1a2a6c; }
         body { 
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            font-family: 'Kanit', sans-serif; 
-            padding: 20px 15px;
+            min-height: 100vh; font-family: 'Kanit', sans-serif; padding: 30px 15px;
         }
         .reg-card { 
-            max-width: 480px; 
-            margin: auto; 
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 40px 30px; 
-            border-radius: 30px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.8);
+            max-width: 480px; margin: auto; background: #ffffff; 
+            padding: 40px 25px; border-radius: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: none;
         }
-        .header-title {
-            color: var(--dark-blue);
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin-bottom: 25px;
-        }
+        .header-title { color: var(--navy); font-weight: 600; margin-bottom: 25px; }
         .profile-img { 
-            width: 110px; height: 110px; 
-            border-radius: 50%; 
-            border: 5px solid white; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            object-fit: cover;
-            margin-bottom: 15px;
+            width: 110px; height: 110px; border-radius: 50%; 
+            border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px; object-fit: cover;
         }
-        .line-name { font-weight: 500; color: #333; margin-bottom: 2px; font-size: 1.2rem; }
-        .line-id { font-size: 0.85rem; color: #999; font-weight: 300; margin-bottom: 20px; }
+        .line-name { font-weight: 500; color: #333; font-size: 1.2rem; }
+        .line-id { font-size: 0.85rem; color: #999; font-weight: 300; margin-bottom: 30px; }
         
-        .form-label { font-weight: 500; color: #555; font-size: 0.9rem; margin-left: 5px; }
+        .form-label { font-weight: 500; color: #555; font-size: 0.9rem; margin-left: 2px; }
         .form-control, .form-select { 
-            border-radius: 12px; 
-            padding: 12px 15px; 
-            border: 1px solid #e1e1e1;
-            background-color: #fff;
-            transition: all 0.3s;
+            border-radius: 12px; padding: 12px 15px; border: 1px solid #e1e1e1;
+            font-size: 1rem; transition: all 0.3s;
         }
-        .form-control:focus { 
-            box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.1); 
-            border-color: var(--primary-color);
-        }
+        .form-control:focus { border-color: var(--line-green); box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.1); }
         .btn-submit { 
-            background: linear-gradient(45deg, var(--dark-blue), #b21f1f);
-            background: var(--primary-color); /* ใช้สีเขียว LINE ให้ดูทันสมัย */
-            border: none; border-radius: 15px; padding: 15px;
-            font-weight: 600; font-size: 1.1rem; color: white;
-            margin-top: 20px; transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(6, 199, 85, 0.3);
+            background: var(--line-green); border: none; border-radius: 15px; 
+            padding: 16px; font-weight: 600; font-size: 1.1rem; color: white;
+            margin-top: 30px; width: 100%; transition: 0.3s;
         }
         .btn-submit:active { transform: scale(0.98); }
         #form-section { display: none; }
@@ -72,16 +45,16 @@
 
     <div class="reg-card">
         <div id="loader" class="text-center">
-            <div class="spinner-border text-primary"></div>
-            <p class="mt-3">Connecting Buzzolute...</p>
+            <div class="spinner-border text-success" role="status"></div>
+            <p class="mt-3 text-muted">กำลังเชื่อมต่อ LINE...</p>
         </div>
 
         <div id="form-section" class="text-center">
-            <h3 class="header-title">ลงทะเบียน Buzzolute Line</h3>
+            <h3 class="header-title">ลงทะเบียน Buzzolute</h3>
             
-            <img id="pictureUrl" src="" class="profile-img">
-            <div id="displayName" class="line-name">Line Name</div>
-            <div id="userId" class="line-id">uXXXXXXXXXXXXXXXXXXXX</div>
+            <img id="pictureUrlDisplay" src="" class="profile-img">
+            <div id="displayNameDisplay" class="line-name">-</div>
+            <div id="userIdDisplay" class="line-id">-</div>
 
             <div class="text-start">
                 <div class="row g-3">
@@ -105,11 +78,11 @@
                         <label class="form-label">จังหวัด</label>
                         <select id="province" class="form-select">
                             <option value="" selected disabled>กรุณาเลือกจังหวัด</option>
-                            </select>
+                        </select>
                     </div>
                     <div class="col-12">
                         <label class="form-label">ประเทศ</label>
-                        <input type="text" id="country" class="form-control" value="ประเทศไทย" readonly style="background-color: #eee;">
+                        <input type="text" id="country" class="form-control" readonly style="background-color: #f8f9fa;">
                     </div>
                     <div class="col-12">
                         <label class="form-label">Platinum ในสายงาน</label>
@@ -117,17 +90,15 @@
                     </div>
                 </div>
 
-                <button onclick="sendData()" id="submitBtn" class="btn btn-submit w-100">ลงทะเบียน</button>
+                <button onclick="sendData()" id="submitBtn" class="btn btn-submit">ลงทะเบียน</button>
             </div>
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        const LIFF_ID = '2009800659-c0ArG5mj'; 
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyF9YqzbUp39tUBusbpFwmugddsP4cjcTe_oTHgjoX38I_UbP1O52iQz7b_rYGLN-E/exec'; 
-
-        const provinces = ["กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชราชธานี"];
+        const provinces = ["กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี"];
 
         async function initLIFF() {
             try {
@@ -138,49 +109,45 @@
                     const profile = await liff.getProfile();
                     window.lineData = profile; 
 
-                    document.getElementById('displayName').innerText = profile.displayName;
-                    document.getElementById('pictureUrl').src = profile.pictureUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
-                    document.getElementById('userId').innerText = profile.userId;
+                    document.getElementById('displayNameDisplay').innerText = profile.displayName;
+                    document.getElementById('pictureUrlDisplay').src = profile.pictureUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                    document.getElementById('userIdDisplay').innerText = profile.userId;
+                    document.getElementById('country').value = DEFAULT_COUNTRY;
                     
-                    // ใส่รายชื่อจังหวัด
                     const provinceSelect = document.getElementById('province');
-                    provinces.forEach(p => {
-                        let option = new Option(p, p);
-                        provinceSelect.add(option);
-                    });
+                    provinces.forEach(p => provinceSelect.add(new Option(p, p)));
 
                     document.getElementById('loader').style.display = 'none';
                     document.getElementById('form-section').style.display = 'block';
                 }
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error('LIFF Init Error:', err); }
         }
 
         async function sendData() {
-            const fields = ['nickname', 'fullName', 'phone', 'email', 'province', 'platinum'];
-            const data = {};
-            let isComplete = true;
+            const btn = document.getElementById('submitBtn');
+            const data = {
+                nickname: document.getElementById('nickname').value,
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                province: document.getElementById('province').value,
+                platinum: document.getElementById('platinum').value
+            };
 
-            fields.forEach(id => {
-                const val = document.getElementById(id).value;
-                if(!val) isComplete = false;
-                data[id] = val;
-            });
-
-            if(!isComplete) {
-                alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง");
-                return;
+            if (Object.values(data).some(val => !val)) {
+                return alert("กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องครับ");
             }
 
-            const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.innerHTML = 'กำลังบันทึกข้อมูล...';
+            btn.innerText = 'กำลังบันทึกข้อมูล...';
 
             const payload = {
                 userId: window.lineData.userId,
                 lineName: window.lineData.displayName,
+                pictureUrl: window.lineData.pictureUrl,
                 ...data,
-                country: 'ประเทศไทย',
-                timestamp: new Date()
+                country: DEFAULT_COUNTRY,
+                pin: DEFAULT_PIN
             };
 
             try {
@@ -192,9 +159,9 @@
                 alert('ลงทะเบียนสำเร็จแล้ว ขอบคุณครับ!');
                 liff.closeWindow();
             } catch (err) {
-                alert('เกิดข้อผิดพลาด');
+                alert('เกิดข้อผิดพลาดในการบันทึก');
                 btn.disabled = false;
-                btn.innerHTML = 'ลงทะเบียน';
+                btn.innerText = 'ลงทะเบียน';
             }
         }
         initLIFF();
