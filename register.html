@@ -9,38 +9,45 @@
         body { background-color: #f8f9fa; padding: 20px; font-family: 'Kanit', sans-serif; }
         .reg-card { max-width: 450px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         #form-section { display: none; }
+        /* สไตล์สำหรับรูปโปรไฟล์ */
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #06c755; margin-bottom: 15px; object-fit: cover; }
+        .line-name { font-weight: bold; color: #333; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="reg-card">
-        <div id="loader" class="text-center">
+    <div class="reg-card text-center">
+        <div id="loader">
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-3">กำลังเชื่อมต่อ LINE...</p>
         </div>
 
         <div id="form-section">
-            <h4 class="text-center mb-4">ลงทะเบียนสมาชิก</h4>
-            <div class="mb-3">
-                <label class="form-label">ชื่อ-นามสกุล</label>
-                <input type="text" id="fullName" class="form-control" placeholder="ระบุชื่อจริง">
+            <img id="pictureUrl" src="" class="profile-img" alt="Profile">
+            <h5 id="displayName" class="line-name">กำลังโหลดชื่อ...</h5>
+            <hr>
+
+            <div class="text-start">
+                <div class="mb-3">
+                    <label class="form-label">ชื่อ-นามสกุล</label>
+                    <input type="text" id="fullName" class="form-control" placeholder="ระบุชื่อจริง">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">เบอร์โทรศัพท์</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="08xxxxxxxx">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">จังหวัด</label>
+                    <input type="text" id="province" class="form-control" placeholder="ระบุจังหวัด">
+                </div>
+                <button onclick="sendData()" id="submitBtn" class="btn btn-primary w-100 p-3" style="border-radius:12px; background-color: #06c755; border:none; font-weight:bold;">บันทึกข้อมูล</button>
             </div>
-            <div class="mb-3">
-                <label class="form-label">เบอร์โทรศัพท์</label>
-                <input type="tel" id="phone" class="form-control" placeholder="08xxxxxxxx">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">จังหวัด</label>
-                <input type="text" id="province" class="form-control" placeholder="ระบุจังหวัด">
-            </div>
-            <button onclick="sendData()" id="submitBtn" class="btn btn-primary w-100 p-3" style="border-radius:12px; background-color: #06c755; border:none; font-weight:bold;">บันทึกข้อมูล</button>
         </div>
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         const LIFF_ID = '2009800659-c0ArG5mj'; 
-        // ก๊อปปี้ Web App URL จาก Google Apps Script (อันที่ลงท้ายด้วย /exec) มาวางตรงนี้
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbyF9YqzbUp39tUBusbpFwmugddsP4cjcTe_oTHgjoX38I_UbP1O52iQz7b_rYGLN-E/exec'; 
 
         async function initLIFF() {
@@ -50,13 +57,17 @@
                     liff.login();
                 } else {
                     const profile = await liff.getProfile();
-                    window.lineData = profile; // เก็บข้อมูลโปรไฟล์ไว้ส่งไปที่ Sheet
+                    window.lineData = profile; 
+
+                    // แสดงข้อมูลชื่อและรูปบน Form
+                    document.getElementById('displayName').innerText = profile.displayName;
+                    document.getElementById('pictureUrl').src = profile.pictureUrl || 'https://via.placeholder.com/100'; // ถ้าไม่มีรูปให้ใช้รูปว่าง
+                    
                     document.getElementById('loader').style.display = 'none';
                     document.getElementById('form-section').style.display = 'block';
                 }
             } catch (err) {
                 console.error('LIFF Error:', err);
-                alert("กรุณาเปิดลิงก์ผ่านแอป LINE");
             }
         }
 
@@ -83,16 +94,13 @@
             };
 
             try {
-                // ส่งข้อมูลไปหา Google Apps Script (GAS)
                 await fetch(GAS_URL, {
                     method: 'POST',
                     mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
                 alert('ลงทะเบียนสำเร็จแล้ว!');
-                liff.closeWindow(); // ปิดหน้าจอ LIFF อัตโนมัติ
+                liff.closeWindow();
             } catch (err) {
                 alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
                 btn.disabled = false;
