@@ -6,7 +6,6 @@
     <title>Buzzolute Registration</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -41,21 +40,14 @@
         .form-label { font-weight: 500; color: #444; font-size: 0.9rem; margin-bottom: 8px; }
 
         /* --- Input Styles --- */
-        .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #e0e0e0; transition: 0.3s; }
-        .form-control:focus { border-color: var(--active-blue); box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1); }
-        .readonly-input { background-color: #f9f9f9 !important; color: #888; cursor: not-allowed; }
-
-        /* --- Tom Select Scroll Fix --- */
-        .ts-wrapper.single .ts-control { border-radius: 12px; padding: 12px; border: 1px solid #e0e0e0; }
-        .ts-dropdown { border-radius: 12px; border: none; box-shadow: 0 15px 30px rgba(0,0,0,0.15); margin-top: 5px; }
-        .ts-dropdown-content {
-            max-height: 250px !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch;
-            padding: 5px;
+        .form-control, .form-select { 
+            border-radius: 12px; padding: 12px 15px; border: 1px solid #e0e0e0; transition: 0.3s; 
+            font-size: 1rem;
         }
-        .ts-dropdown .option { padding: 12px 15px; border-radius: 8px; }
-        .ts-dropdown .active { background: var(--active-blue) !important; color: #fff !important; }
+        .form-control:focus, .form-select:focus { 
+            border-color: var(--active-blue); box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1); 
+        }
+        .readonly-input { background-color: #f9f9f9 !important; color: #888; cursor: not-allowed; }
 
         .btn-submit { 
             background: var(--active-blue); border: none; border-radius: 15px; 
@@ -69,7 +61,8 @@
 
     <div id="loader">
         <div class="spinner"></div>
-        <h5 style="color:var(--navy)">กำลังเชื่อมต่อระบบ LINE</h5>
+        <h5 style="color:var(--navy); margin-bottom: 8px;">กำลังเชื่อมต่อระบบ LINE</h5>
+        <p style="color:#aaa; font-weight: 300; font-size: 0.95rem;">โปรดรอสักครู่...</p>
     </div>
 
     <div class="container py-4">
@@ -100,7 +93,9 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label">จังหวัด</label>
-                        <select id="province" placeholder="เลือกหรือพิมพ์ค้นหาจังหวัด..."></select>
+                        <select id="province" class="form-select">
+                            <option value="" selected disabled>กรุณาเลือกจังหวัด</option>
+                        </select>
                     </div>
                     <div class="col-12">
                         <label class="form-label">ประเทศ</label>
@@ -119,7 +114,6 @@
 
     <script src="config.js"></script>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     
     <script>
         const provinces = ["กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี"];
@@ -137,17 +131,16 @@
                     document.getElementById('pictureUrlDisplay').src = profile.pictureUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                     document.getElementById('userIdDisplay').innerText = profile.userId;
                     
+                    // วนลูปใส่รายชื่อจังหวัดใน Select มาตรฐาน
                     const selectEl = document.getElementById('province');
-                    selectEl.add(new Option("", "")); 
-                    provinces.forEach(p => selectEl.add(new Option(p, p)));
-                    
-                    new TomSelect("#province", {
-                        create: false,
-                        placeholder: "เลือกหรือพิมพ์ค้นหาจังหวัด...",
-                        allowEmptyOption: true,
-                        maxOptions: 100
+                    provinces.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p;
+                        opt.innerHTML = p;
+                        selectEl.appendChild(opt);
                     });
 
+                    // ซ่อนหน้า Loading
                     const loader = document.getElementById('loader');
                     loader.style.opacity = '0';
                     setTimeout(() => {
@@ -168,7 +161,7 @@
                 platinum: document.getElementById('platinum').value.trim()
             };
 
-            // --- แจ้งเตือนข้อความสั้นตามสั่ง ---
+            // แจ้งเตือนสั้นๆ ตามสั่ง
             if (Object.values(data).some(v => !v)) {
                 Swal.fire({
                     title: 'กรุณากรอกข้อมูลให้ครบถ้วน',
