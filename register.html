@@ -12,6 +12,8 @@
     <style>
         :root { --active-blue: #007bff; --navy: #1a2a6c; }
         body { background: #f4f7f6; min-height: 100vh; font-family: 'Kanit', sans-serif; }
+        
+        /* Initial Loader */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #ffffff; display: flex; flex-direction: column; 
@@ -23,19 +25,24 @@
             animation: spin 0.6s linear infinite; margin-bottom: 20px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .reg-card { 
             max-width: 480px; margin: 20px auto; background: #ffffff; 
             padding: 40px 30px; border-radius: 25px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.04); display: none;
         }
         .header-title { color: var(--navy); font-weight: 600; margin-bottom: 30px; }
+        .form-label { font-weight: 500; color: #444; font-size: 0.9rem; margin-bottom: 8px; }
         .form-control, .form-select { border-radius: 12px; padding: 12px 15px; border: 1px solid #e0e0e0; font-size: 1rem; }
         .readonly-input { background-color: #f9f9f9 !important; color: #888; cursor: not-allowed; }
+        
         .btn-submit { 
             background: var(--active-blue); border: none; border-radius: 15px; 
             padding: 16px; font-weight: 600; color: white; width: 100%; margin-top: 25px;
+            transition: 0.3s;
         }
-        .swal-luxury { font-family: 'Kanit', sans-serif !important; border-radius: 20px !important; }
+        .btn-submit:active { transform: scale(0.98); }
+        .swal-luxury { font-family: 'Kanit', sans-serif !important; border-radius: 25px !important; }
     </style>
 </head>
 <body>
@@ -129,13 +136,29 @@
                 platinum: document.getElementById('platinum').value.trim()
             };
 
+            // ตรวจสอบข้อมูลว่าง
             if (Object.values(data).some(v => !v)) {
-                Swal.fire({ title: 'กรุณากรอกข้อมูลให้ครบถ้วน', icon: 'info', customClass: { popup: 'swal-luxury' } });
+                Swal.fire({ 
+                    title: 'ข้อมูลไม่ครบ', 
+                    text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง', 
+                    icon: 'warning', 
+                    confirmButtonColor: '#1a2a6c',
+                    customClass: { popup: 'swal-luxury' } 
+                });
                 return;
             }
 
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerHTML = 'กำลังบันทึก...';
+            // --- 🚀 เริ่มต้น Loading กลางจอแบบใหม่ ---
+            Swal.fire({
+                title: 'กำลังลงทะเบียน',
+                text: 'โปรดรอสักครู่ ระบบกำลังบันทึกข้อมูล...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                customClass: { popup: 'swal-luxury' },
+                didOpen: () => {
+                    Swal.showLoading(); // แสดงตัวหมุนกลางจอ
+                }
+            });
 
             try {
                 const payload = {
@@ -147,18 +170,35 @@
                     country: "ประเทศไทย"
                 };
 
+                // ส่งข้อมูลไป GAS
                 await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 
-                Swal.fire({ title: 'ลงทะเบียนสำเร็จ', icon: 'success', showConfirmButton: false, timer: 2000, customClass: { popup: 'swal-luxury' } })
-                .then(() => {
+                // เมื่อสำเร็จ ให้เปลี่ยน Loading เป็นเครื่องหมายถูก
+                Swal.fire({ 
+                    title: 'ลงทะเบียนสำเร็จ', 
+                    icon: 'success', 
+                    showConfirmButton: false, 
+                    timer: 2000,
+                    timerProgressBar: true,
+                    customClass: { popup: 'swal-luxury' } 
+                }).then(() => {
                     const urlParams = new URLSearchParams(window.location.search);
                     const target = urlParams.get('target');
-                    if (target) { window.location.href = decodeURIComponent(target); } 
-                    else { liff.closeWindow(); }
+                    if (target) { 
+                        window.location.href = decodeURIComponent(target); 
+                    } else { 
+                        liff.closeWindow(); 
+                    }
                 });
             } catch (err) {
-                Swal.fire({ title: 'เกิดข้อผิดพลาด', icon: 'error' });
-                btn.disabled = false; btn.innerText = 'ลงทะเบียนสมาชิก';
+                // กรณี Error ให้แจ้งเตือน
+                Swal.fire({ 
+                    title: 'เกิดข้อผิดพลาด', 
+                    text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่', 
+                    icon: 'error',
+                    confirmButtonColor: '#1a2a6c',
+                    customClass: { popup: 'swal-luxury' }
+                });
             }
         }
         initLIFF();
