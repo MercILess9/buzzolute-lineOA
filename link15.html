@@ -15,7 +15,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap');
         
-        /* แก้อาการจอเลื่อนซ้ายขวา */
         html, body { 
             max-width: 100%; 
             overflow-x: hidden; 
@@ -27,40 +26,33 @@
         .dark .glass { background: rgba(15, 23, 42, 0.96); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
 
         /* Modal Pop-up (กลางจอ) */
-        #picker-overlay { 
-            transition: all 0.3s ease; 
-        }
+        #picker-overlay { transition: all 0.3s ease; }
         #picker-sheet { 
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: scale(0.8);
             opacity: 0;
         }
-        #picker-overlay.active #picker-sheet {
-            transform: scale(1);
-            opacity: 1;
-        }
+        #picker-overlay.active #picker-sheet { transform: scale(1); opacity: 1; }
 
         /* Wheel Picker */
         .wheel-item {
             scroll-snap-align: center;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 50px;
-            font-weight: 600;
-            color: #94a3b8;
+            display: flex; align-items: center; justify-content: center;
+            height: 50px; font-weight: 600; color: #94a3b8;
         }
         .wheel-item.active {
-            color: #4f46e5;
-            font-size: 1.3rem;
-            font-weight: 800;
-            transform: scale(1.1);
+            color: #4f46e5; font-size: 1.3rem; font-weight: 800; transform: scale(1.1);
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .video-card { transition: all 0.2s ease; cursor: pointer; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Search Layer Fix */
+        #header-search {
+            z-index: 60; /* ให้สูงกว่า header ปกติ */
+        }
 
         .fast-spin { animation: spin 0.6s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -70,48 +62,49 @@
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 pb-10">
 
     <div id="loading" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-slate-900">
-        <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full fast-spin"></div>
-        <p class="mt-4 text-slate-500 dark:text-slate-400 font-bold text-lg tracking-wider">กำลังเตรียมข้อมูล...</p>
+        <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full fast-spin"></div>
+        <p class="mt-4 text-slate-500 dark:text-slate-400 font-medium text-sm">กำลังโหลดข้อมูล</p>
     </div>
 
     <div id="picker-overlay" class="fixed inset-0 z-[90] bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none flex items-center justify-center p-6">
         <div id="picker-sheet" class="w-full max-w-sm bg-white dark:bg-slate-800 rounded-[3rem] p-8 shadow-2xl relative">
-            
-            <h3 class="text-center font-black text-xl text-slate-800 dark:text-white mb-6 tracking-tight">เลือกชุดวิดีโอ</h3>
-            
-            <div class="relative h-[200px] overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar py-[75px]" id="wheel-container">
-                </div>
-            
+            <h3 class="text-center font-black text-xl mb-6">เลือกชุดวิดีโอ</h3>
+            <div class="relative h-[200px] overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar py-[75px]" id="wheel-container"></div>
             <div class="absolute left-8 right-8 top-[162px] h-[50px] border-y-2 border-indigo-100 dark:border-indigo-900/50 pointer-events-none"></div>
-
-            <button onclick="togglePicker(false)" class="w-full mt-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-2xl font-black shadow-xl shadow-indigo-200 dark:shadow-none active:scale-95 transition-all">
-                ตกลง
-            </button>
+            <button onclick="togglePicker(false)" class="w-full mt-8 py-4 bg-indigo-600 text-white rounded-2xl font-black active:scale-95 transition-all shadow-lg shadow-indigo-200 dark:shadow-none">ตกลง</button>
         </div>
     </div>
 
     <div id="mainUI" class="hidden opacity-0 transition-opacity duration-300">
         
-        <header class="sticky top-0 z-50 glass border-b p-3 sm:p-4">
+        <header class="sticky top-0 z-50 glass border-b p-3">
             <div class="max-w-2xl mx-auto flex items-center h-12 relative gap-3">
                 
                 <div id="header-default" class="flex items-center gap-3 w-full transition-all">
-                    <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 bg-gray-100 dark:bg-slate-800/50 rounded-2xl border border-indigo-50 dark:border-indigo-900/20 flex items-center justify-center shadow-inner cursor-pointer">
-                        <span id="selected-pack-name" class="text-indigo-600 dark:text-indigo-400 font-extrabold text-[13px] tracking-wide">กำลังเลือก...</span>
+                    <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 bg-gray-100 dark:bg-slate-800 rounded-2xl border border-indigo-50 dark:border-indigo-900/20 flex items-center justify-center cursor-pointer overflow-hidden">
+                        <span id="selected-pack-name" class="text-indigo-600 dark:text-indigo-400 font-extrabold text-[13px] truncate">กำลังเลือก...</span>
                         <i class="fa-solid fa-caret-down ml-2 text-indigo-400"></i>
                     </div>
 
                     <div class="flex gap-2">
-                        <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800/50 flex items-center justify-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
-                        <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800/50 flex items-center justify-center text-slate-400"><i id="darkIcon" class="fa-solid fa-moon"></i></button>
+                        <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                        </button>
+                        <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                            <i id="darkIcon" class="fa-solid fa-moon"></i>
+                        </button>
                     </div>
                 </div>
 
                 <div id="header-search" class="absolute inset-0 flex items-center gap-2 bg-white dark:bg-slate-800 opacity-0 pointer-events-none transition-all duration-300 translate-x-10">
-                    <button onclick="toggleSearch(false)" class="w-10 h-10 flex items-center justify-center text-slate-400"><i class="fa-solid fa-arrow-left"></i></button>
-                    <div class="flex-1 relative">
+                    <button onclick="toggleSearch(false)" class="w-12 h-12 flex items-center justify-center text-slate-400 active:bg-slate-100 rounded-full shrink-0">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <div class="flex-1 relative mr-2">
                         <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="ค้นหา..." class="w-full h-11 pl-4 pr-10 bg-slate-100 dark:bg-slate-700 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                        <button id="clearSearch" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hidden"><i class="fa-solid fa-circle-xmark"></i></button>
+                        <button id="clearSearch" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hidden">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -127,10 +120,10 @@
                 </div>
                 
                 <div class="flex gap-2">
-                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-10 px-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 active:scale-95 transition-all shadow-lg shadow-indigo-100 dark:shadow-none">
+                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-10 px-4 bg-indigo-600 text-white rounded-xl font-bold text-xs flex items-center gap-2 active:scale-95 transition-all shadow-lg shadow-indigo-100">
                         <i class="fa-regular fa-copy"></i> <span id="copyBtnText">คัดลอกทั้งหมด</span>
                     </button>
-                    <button onclick="shareToLine()" class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl flex items-center justify-center active:scale-90 transition-all shadow-lg shadow-emerald-100 dark:shadow-none">
+                    <button onclick="shareToLine()" class="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center active:scale-90 transition-all shadow-lg shadow-emerald-100">
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
                 </div>
@@ -174,7 +167,7 @@
             } catch (err) { console.error(err); }
         }
 
-        // --- Wheel Picker (Central Modal) ---
+        // --- Wheel Picker ---
         function togglePicker(isOpen) {
             const overlay = document.getElementById('picker-overlay');
             if (isOpen) {
@@ -194,13 +187,9 @@
                 const item = document.createElement('div');
                 item.className = "wheel-item";
                 item.innerText = name;
-                item.onclick = () => {
-                    currentSelectedPack = name;
-                    scrollToItem(item);
-                };
+                item.onclick = () => { currentSelectedPack = name; scrollToItem(item); };
                 container.appendChild(item);
             });
-            
             container.onscroll = () => {
                 const items = container.querySelectorAll('.wheel-item');
                 let closest = items[0];
@@ -214,45 +203,40 @@
             };
         }
 
-        function scrollToItem(element) {
-            const container = document.getElementById('wheel-container');
-            container.scrollTop = element.offsetTop - 75;
-        }
-
+        function scrollToItem(el) { document.getElementById('wheel-container').scrollTop = el.offsetTop - 75; }
         function updateWheelVisuals() {
             const items = document.querySelectorAll('.wheel-item');
             items.forEach(item => item.classList.toggle('active', item.innerText === currentSelectedPack));
             document.getElementById('selected-pack-name').innerText = currentSelectedPack;
         }
 
-        // --- Core Functions ---
-        function showPack(packName) {
-            currentSelectedPack = packName;
-            document.getElementById('currentPackTitle').innerText = packName;
-            document.getElementById('selected-pack-name').innerText = packName;
-            const packInfo = MASTER_DATA[packName];
+        // --- Core ---
+        function showPack(p) {
+            currentSelectedPack = p;
+            document.getElementById('currentPackTitle').innerText = p;
+            document.getElementById('selected-pack-name').innerText = p;
+            const packInfo = MASTER_DATA[p];
             const pBtn = document.getElementById('playlistBtn');
             pBtn.href = packInfo.playlistUrl || "#";
             pBtn.style.display = packInfo.playlistUrl ? 'flex' : 'none';
-            const videoList = document.getElementById('videoList');
-            videoList.innerHTML = "";
-            packInfo.videos.forEach(video => {
-                const videoID = extractYoutubeID(video.url);
-                const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/150x85';
-                videoList.innerHTML += `
+            const vList = document.getElementById('videoList');
+            vList.innerHTML = "";
+            packInfo.videos.forEach(v => {
+                const vidID = extractYoutubeID(v.url);
+                vList.innerHTML += `
                     <div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4">
-                        <div class="relative flex-shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-2xl overflow-hidden bg-slate-100 shadow-inner" onclick="window.open('${video.url}', '_blank')">
-                            <img src="${thumbUrl}" class="w-full h-full object-cover opacity-90">
+                        <div class="relative flex-shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-2xl overflow-hidden bg-slate-100 shadow-inner" onclick="window.open('${v.url}', '_blank')">
+                            <img src="https://img.youtube.com/vi/${vidID}/mqdefault.jpg" class="w-full h-full object-cover opacity-90">
                         </div>
-                        <div class="flex-1 min-w-0" onclick="window.open('${video.url}', '_blank')">
-                            <h3 class="text-[14px] sm:text-[15px] font-bold text-indigo-900 dark:text-indigo-300 leading-tight line-clamp-2 mb-1 tracking-tight">${video.title}</h3>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 truncate font-light italic">${video.url}</p>
+                        <div class="flex-1 min-w-0" onclick="window.open('${v.url}', '_blank')">
+                            <h3 class="text-[14px] sm:text-[15px] font-bold text-blue-900 dark:text-blue-300 leading-tight line-clamp-2 mb-1 uppercase tracking-tight">${v.title}</h3>
+                            <p class="text-[10px] text-gray-400 dark:text-gray-500 truncate font-light">${v.url}</p>
                         </div>
                         <div class="flex flex-col items-end gap-1.5 shrink-0 pr-1">
-                            <span class="text-[9px] text-slate-400 dark:text-slate-600 font-bold italic">#${video.no} | ${packName}</span>
+                            <span class="text-[9px] text-gray-400 dark:text-gray-600 font-bold italic">#${v.no} | ${p}</span>
                             <div class="flex gap-1.5">
-                                <button onclick="copySingle('${video.url}', this)" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-400 flex items-center justify-center"><i class="fa-regular fa-copy text-xs"></i></button>
-                                <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+                                <button onclick="copySingle('${v.url}', this)" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-400 flex items-center justify-center"><i class="fa-regular fa-copy text-xs"></i></button>
+                                <button onclick="shareSingle('${v.url}', '${v.title}')" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-share-nodes text-xs"></i></button>
                             </div>
                         </div>
                     </div>`;
@@ -260,16 +244,30 @@
             updateWheelVisuals();
         }
 
-        // --- Search/Dark/Utils (คงเดิม) ---
-        function toggleSearch(o){ const d=document.getElementById('header-default'),s=document.getElementById('header-search'); if(o){ d.classList.add('opacity-0','-translate-x-5','pointer-events-none'); s.classList.remove('opacity-0','pointer-events-none'); s.classList.add('opacity-100','translate-x-0'); setTimeout(()=>document.getElementById('searchInput').focus(),300); } else { s.classList.add('opacity-0','translate-x-10','pointer-events-none'); d.classList.remove('opacity-0','-translate-x-5','pointer-events-none'); clearSearch(); } }
+        // --- Search/Dark/Utils ---
+        function toggleSearch(isOpen) {
+            const d = document.getElementById('header-default');
+            const s = document.getElementById('header-search');
+            const input = document.getElementById('searchInput');
+            if (isOpen) {
+                s.classList.remove('pointer-events-none', 'opacity-0');
+                s.classList.add('opacity-100', 'translate-x-0');
+                d.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => input.focus(), 300);
+            } else {
+                s.classList.add('opacity-0', 'pointer-events-none');
+                s.classList.remove('opacity-100', 'translate-x-0');
+                d.classList.remove('opacity-0', 'pointer-events-none');
+                clearSearch();
+            }
+        }
         function toggleDarkMode(){ isDarkMode=!isDarkMode; document.documentElement.classList.toggle('dark',isDarkMode); localStorage.theme=isDarkMode?'dark':'light'; updateDarkIcon(); }
         function updateDarkIcon(){ const i=document.getElementById('darkIcon'); i.className=isDarkMode?'fa-solid fa-sun text-yellow-400':'fa-solid fa-moon'; }
-        function handleSearch(q){ const v=document.getElementById('videoList'),a=document.getElementById('packActionRow'); if(!q.trim()){ a.classList.remove('hidden'); showPack(currentSelectedPack); return; } a.classList.add('hidden'); v.innerHTML=""; Object.keys(MASTER_DATA).forEach(pk=>MASTER_DATA[pk].videos.forEach(vd=>{ if(vd.title.toLowerCase().includes(q.toLowerCase())){ v.innerHTML+=createSearchCard(vd,pk); } })); }
-        function createSearchCard(v,p){ const id=extractYoutubeID(v.url); return `<div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] p-3 flex gap-4 mb-3 border border-slate-100"><div class="w-24 h-16 rounded-2xl overflow-hidden flex-shrink-0" onclick="window.open('${v.url}','_blank')"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" class="w-full h-full object-cover"></div><div class="flex-1"><h3 class="text-[14px] font-bold text-indigo-900 leading-tight line-clamp-2">${v.title}</h3><p class="text-[10px] text-slate-400">#${v.no} | ${p}</p></div></div>`; }
+        function handleSearch(q){ const v=document.getElementById('videoList'),a=document.getElementById('packActionRow'); if(!q.trim()){ a.classList.remove('hidden'); showPack(currentSelectedPack); return; } a.classList.add('hidden'); v.innerHTML=""; Object.keys(MASTER_DATA).forEach(pk=>MASTER_DATA[pk].videos.forEach(vd=>{ if(vd.title.toLowerCase().includes(q.toLowerCase())){ const id=extractYoutubeID(vd.url); v.innerHTML+=`<div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] p-3 flex gap-4 mb-3 border border-slate-100"><div class="w-24 h-16 rounded-2xl overflow-hidden flex-shrink-0" onclick="window.open('${vd.url}','_blank')"><img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" class="w-full h-full object-cover"></div><div class="flex-1"><h3 class="text-[14px] font-bold text-blue-900 leading-tight line-clamp-2">${vd.title}</h3><p class="text-[10px] text-slate-400">#${vd.no} | ${pk}</p></div></div>`; } })); }
         function clearSearch(){ document.getElementById('searchInput').value=""; handleSearch(""); }
         function copySingle(u,b){ navigator.clipboard.writeText(u).then(()=>{ b.innerHTML='<i class="fa-solid fa-check text-emerald-500"></i>'; setTimeout(()=>b.innerHTML='<i class="fa-regular fa-copy text-xs"></i>',1500); }); }
         async function shareSingle(u,t){ try{ await liff.shareTargetPicker([{"type":"text","text":`${t}\n${u}`}]);}catch(e){} }
-        function copyCurrentLink(){ const text=generatePackTemplate(currentSelectedPack); navigator.clipboard.writeText(text).then(()=>{ const b=document.getElementById('copyAllBtn'),t=document.getElementById('copyBtnText'); t.innerText="คัดลอกแล้ว"; b.classList.replace('from-indigo-600','from-emerald-500'); setTimeout(()=>{ t.innerText="คัดลอกทั้งหมด"; b.classList.replace('from-emerald-500','from-indigo-600'); },2000); }); }
+        function copyCurrentLink(){ const text=generatePackTemplate(currentSelectedPack); navigator.clipboard.writeText(text).then(()=>{ const b=document.getElementById('copyAllBtn'),t=document.getElementById('copyBtnText'); t.innerText="คัดลอกแล้ว"; b.classList.replace('bg-indigo-600','bg-emerald-500'); setTimeout(()=>{ t.innerText="คัดลอกทั้งหมด"; b.classList.replace('bg-emerald-500','bg-indigo-600'); },2000); }); }
         function generatePackTemplate(p){ const info=MASTER_DATA[p]; let t=`${p}\n--------------\n\n`; if(info.playlistUrl) t+=`Playlist: ${info.playlistUrl}\n\n`; info.videos.forEach(v=>t+=`${v.no} : ${v.title}\n${v.url}\n\n`); return t.trim(); }
         function extractYoutubeID(u){ const m=u.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/); return (m&&m[2].length===11)?m[2]:null; }
     </script>
