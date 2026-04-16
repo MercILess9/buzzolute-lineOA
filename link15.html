@@ -15,7 +15,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap');
         
-        /* ป้องกันจอเลื่อนเละเทะ */
         html, body { 
             max-width: 100%; overflow-x: hidden; 
             font-family: 'Kanit', sans-serif; 
@@ -43,7 +42,7 @@
         /* Wheel Picker */
         #wheel-container { 
             height: 200px; overflow-y: auto; scroll-snap-type: y mandatory; 
-            padding: 75px 0; /* ให้ตัวที่เลือกอยู่ตรงกลางพอดี */
+            padding: 75px 0;
         }
         .wheel-item {
             height: 50px; display: flex; align-items: center; justify-content: center;
@@ -51,7 +50,6 @@
         }
         .wheel-item.active { color: #4f46e5; font-size: 1.4rem; font-weight: 800; }
 
-        /* Utility */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
         .grad-indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
@@ -68,9 +66,8 @@
 
     <div id="picker-overlay" class="modal-overlay">
         <div class="modal-box text-center shadow-2xl relative">
-            <h3 class="font-extrabold text-xl mb-6">เลือกชุดวิดีโอ</h3>
-            <div id="wheel-container" class="no-scrollbar relative">
-                </div>
+            <h3 class="font-extrabold text-xl mb-6 text-indigo-600">เลือก</h3>
+            <div id="wheel-container" class="no-scrollbar relative"></div>
             <div class="absolute left-8 right-8 top-[152px] h-[50px] border-y-2 border-indigo-100 dark:border-indigo-900/30 pointer-events-none"></div>
             <button onclick="togglePicker(false)" class="w-full mt-8 py-4 grad-indigo text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-all">ตกลง</button>
         </div>
@@ -84,12 +81,11 @@
             </div>
             
             <div class="flex items-center gap-2 mb-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" class="w-5 h-5 accent-indigo-600">
-                <label for="selectAll" class="text-sm font-bold">เลือกทั้งหมด</label>
+                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                <label for="selectAll" class="text-sm font-bold cursor-pointer">เลือกทั้งหมด</label>
             </div>
 
-            <div id="copy-options-list" class="flex-1 overflow-y-auto space-y-2 no-scrollbar pr-1">
-                </div>
+            <div id="copy-options-list" class="flex-1 overflow-y-auto space-y-2 no-scrollbar pr-1"></div>
 
             <button onclick="executeCopySelected()" class="w-full mt-6 py-4 grad-indigo text-white rounded-2xl font-bold active:scale-95 transition-all">คัดลอกรายการที่เลือก</button>
         </div>
@@ -99,7 +95,7 @@
         <header class="sticky top-0 z-50 glass border-b p-3 shadow-sm">
             <div class="max-w-2xl mx-auto flex items-center h-12 gap-3">
                 <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 grad-indigo text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-lg overflow-hidden">
-                    <span id="selected-pack-name" class="font-extrabold text-lg truncate">เลือกชุดวิดีโอ</span>
+                    <span id="selected-pack-name" class="font-extrabold text-lg truncate tracking-wide">เลือก</span>
                     <i class="fa-solid fa-chevron-down ml-2 text-xs opacity-70"></i>
                 </div>
                 <div class="flex gap-2">
@@ -201,10 +197,11 @@
         function updateWheelVisuals() {
             const items = document.querySelectorAll('.wheel-item');
             items.forEach(item => item.classList.toggle('active', item.innerText === currentSelectedPack));
-            document.getElementById('selected-pack-name').innerText = currentSelectedPack;
+            // แสดงชื่อแพ็กจริงเมื่อเลือกแล้ว
+            if(currentSelectedPack) document.getElementById('selected-pack-name').innerText = currentSelectedPack;
         }
 
-        // --- Copy Selector ---
+        // --- Copy Selector Logic (Updated Format) ---
         function toggleCopySelector(o) { document.getElementById('copy-selector-overlay').classList.toggle('active', o); }
         function prepareCopySelector() {
             const packInfo = MASTER_DATA[currentSelectedPack];
@@ -222,15 +219,30 @@
             </div>`;
         }
         function toggleSelectAll(checked) { document.querySelectorAll('.copy-checkbox').forEach(cb => cb.checked = checked); }
+        
         function executeCopySelected() {
             const checkboxes = document.querySelectorAll('.copy-checkbox:checked');
-            if (!checkboxes.length) return alert("เลือกอย่างน้อย 1 รายการ");
-            let text = `${currentSelectedPack}\n--------------\n\n`;
+            if (!checkboxes.length) return alert("กรุณาเลือกอย่างน้อย 1 รายการ");
+            
+            // ใช้ฟังก์ชันกลางในการสร้าง Text
+            let textToCopy = `${currentSelectedPack}\n--------------\n\n`;
+            
             checkboxes.forEach(cb => {
-                if (cb.dataset.type === 'playlist') text += `Playlist\n${cb.dataset.url}\n\n`;
-                else text += `${cb.dataset.no} : ${cb.dataset.title}\n${cb.dataset.url}\n\n`;
+                const type = cb.dataset.type;
+                const url = cb.dataset.url;
+                if (type === 'playlist') {
+                    textToCopy += `Playlist (${currentSelectedPack})\n${url}\n\n`;
+                } else {
+                    const title = cb.dataset.title;
+                    const no = cb.dataset.no;
+                    textToCopy += `${no} (${currentSelectedPack}) : ${title}\n${url}\n\n`;
+                }
             });
-            navigator.clipboard.writeText(text.trim()).then(() => { toggleCopySelector(false); alert("คัดลอกสำเร็จ!"); });
+
+            navigator.clipboard.writeText(textToCopy.trim()).then(() => {
+                toggleCopySelector(false);
+                alert("คัดลอกข้อมูลเรียบร้อย!");
+            });
         }
 
         // --- Core ---
@@ -248,7 +260,7 @@
                         <img src="https://img.youtube.com/vi/${vidID}/mqdefault.jpg" class="w-full h-full object-cover">
                     </div>
                     <div class="flex-1 min-w-0" onclick="window.open('${v.url}','_blank')">
-                        <h3 class="text-[14px] font-bold text-indigo-900 dark:text-blue-300 line-clamp-2 mb-1 uppercase tracking-tight">${v.title}</h3>
+                        <h3 class="text-[14px] font-bold text-indigo-900 dark:text-blue-300 line-clamp-2 mb-1 tracking-tight">${v.title}</h3>
                         <p class="text-[10px] text-slate-400 italic">#${v.no} | ${p}</p>
                     </div>
                     <div class="flex gap-1.5 pr-1">
@@ -265,15 +277,30 @@
             const v=document.getElementById('videoList'), c=document.getElementById('clearSearch');
             c.classList.toggle('hidden', !q); v.innerHTML = "";
             Object.keys(MASTER_DATA).forEach(pk => MASTER_DATA[pk].videos.forEach(vd => {
-                if(vd.title.toLowerCase().includes(q.toLowerCase())) v.innerHTML += `<div class="p-3 bg-white dark:bg-slate-800 rounded-2xl border mb-2" onclick="window.open('${vd.url}','_blank')"><h4 class="font-bold text-sm">${vd.title}</h4><p class="text-xs text-slate-400">#${vd.no} | ${pk}</p></div>`;
+                if(vd.title.toLowerCase().includes(q.toLowerCase())) v.innerHTML += `<div class="p-4 bg-white dark:bg-slate-800 rounded-2xl border mb-2 shadow-sm" onclick="window.open('${vd.url}','_blank')"><h4 class="font-bold text-sm text-indigo-900 dark:text-blue-300">${vd.title}</h4><p class="text-xs text-slate-400">#${vd.no} | ${pk}</p></div>`;
             }));
         }
         function clearSearch() { document.getElementById('searchInput').value = ""; handleSearch(""); }
         function toggleDarkMode() { isDarkMode = !isDarkMode; document.documentElement.classList.toggle('dark', isDarkMode); localStorage.theme = isDarkMode ? 'dark' : 'light'; updateDarkIcon(); }
         function updateDarkIcon() { document.getElementById('darkIcon').className = isDarkMode ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon'; }
         function copySingle(u,b) { navigator.clipboard.writeText(u).then(()=> { b.innerHTML='<i class="fa-solid fa-check text-emerald-500"></i>'; setTimeout(()=>b.innerHTML='<i class="fa-regular fa-copy text-xs"></i>',1500); }); }
-        async function shareToLine() { const t=generatePackTemplate(currentSelectedPack); try{ await liff.shareTargetPicker([{"type":"text","text":t}]); } catch(e){} }
-        function generatePackTemplate(p){ const info=MASTER_DATA[p]; let t=`${p}\n--------------\n\n`; info.videos.forEach(v=>t+=`${v.no} : ${v.title}\n${v.url}\n\n`); return t.trim(); }
+        
+        async function shareToLine() {
+            // ฟังก์ชันแชร์ ใช้ Format เดียวกับ Copy
+            const textToShare = generatePackTemplate(currentSelectedPack);
+            try { await liff.shareTargetPicker([{"type":"text","text":textToShare}]); } catch(e){} 
+        }
+
+        function generatePackTemplate(p){
+            const info = MASTER_DATA[p];
+            let t = `${p}\n--------------\n\n`;
+            if (info.playlistUrl) t += `Playlist (${p})\n${info.playlistUrl}\n\n`;
+            info.videos.forEach(v => {
+                t += `${v.no} (${p}) : ${v.title}\n${v.url}\n\n`;
+            });
+            return t.trim();
+        }
+
         function extractYoutubeID(u){ const m=u.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/); return (m&&m[2].length===11)?m[2]:null; }
     </script>
 </body>
