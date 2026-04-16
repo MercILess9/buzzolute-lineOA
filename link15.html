@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buzzolute Video Link</title>
+    <title>Buzzolute Link Library</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #f1f5f9; }
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: #f8fafc; /* สีพื้นหลังโทนสว่างดูสะอาด */
+        }
         
-        /* สไตล์ปุ่ม Pack ด้านบน */
+        /* สไตล์ปุ่มเลือก Pack (Navigation) */
         .pack-btn {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid #e2e8f0;
@@ -21,64 +24,72 @@
             background: #2563eb !important;
             color: white !important;
             border-color: #2563eb !important;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
         }
         
-        /* สไตล์ Video Card */
+        /* การ์ดวิดีโอ */
         .video-card {
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
-        .video-card:active { transform: scale(0.97); }
-        
+        .video-card:active {
+            transform: scale(0.96);
+        }
+
+        /* ซ่อน Scrollbar สำหรับเมนู */
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
         .hidden { display: none; }
-        .custom-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-12 text-gray-900">
 
     <div id="loading" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
-        <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-4 text-gray-500 text-sm font-light">กำลังโหลดความรู้...</p>
+        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-4 text-gray-500 font-light">กำลังโหลดความรู้...</p>
     </div>
 
     <div id="mainUI" class="opacity-0 transition-opacity duration-500 hidden">
         
-        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-5 py-4 border-b flex justify-between items-center">
-            <h1 class="text-xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 bg-clip-text text-transparent">
-                <i class="fa-solid fa-play-circle mr-1"></i> Buzzolute Link
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-6 py-4 border-b flex justify-between items-center">
+            <h1 class="text-xl font-black italic bg-gradient-to-r from-blue-800 to-blue-500 bg-clip-text text-transparent">
+                BUZZOLUTE
             </h1>
-            <span id="userName" class="text-[12px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium"></span>
+            <span id="userName" class="text-[11px] bg-blue-50 text-blue-600 px-3 py-1.5 rounded-full font-bold"></span>
         </header>
 
-        <div class="bg-white shadow-sm sticky top-[65px] z-30">
-            <div class="px-5 pt-3">
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">เลือกชุดวิดีโอที่คุณสนใจ</p>
+        <div class="bg-white shadow-sm sticky top-[61px] z-30">
+            <div class="px-6 pt-4">
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] mb-3">หมวดหมู่วิดีโอ</p>
             </div>
-            <div class="flex gap-2 overflow-x-auto px-5 pb-4 custom-scrollbar" id="packMenu">
+            <div class="flex gap-3 overflow-x-auto px-6 pb-5 custom-scrollbar" id="packMenu">
                 </div>
         </div>
 
-        <main class="p-5">
-            <div id="packHeader" class="mb-6 bg-white p-5 rounded-3xl shadow-sm border border-white">
-                <div class="flex items-start justify-between mb-4">
-                    <h2 id="currentPackTitle" class="text-2xl font-extrabold text-gray-800 leading-tight"></h2>
+        <main class="p-6">
+            <div class="mb-8 bg-white p-6 rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-white">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <h2 id="currentPackTitle" class="text-3xl font-extrabold text-gray-900 tracking-tight"></h2>
+                        <p class="text-xs text-gray-400 mt-1">คัดลอกหรือแชร์ข้อมูลชุดนี้ได้ทันที</p>
+                    </div>
                     <div class="flex gap-2">
-                        <button onclick="copyCurrentLink()" class="w-10 h-10 flex items-center justify-center bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100">
-                            <i class="fa-regular fa-copy"></i>
+                        <button onclick="copyCurrentLink()" class="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-400 rounded-2xl border border-gray-100 hover:bg-gray-100 transition-colors shadow-sm">
+                            <i class="fa-regular fa-copy text-xl"></i>
                         </button>
-                        <button onclick="shareToLine()" class="w-10 h-10 flex items-center justify-center bg-green-50 text-green-600 rounded-2xl hover:bg-green-100 transition-colors border border-green-100">
-                            <i class="fa-solid fa-share-nodes"></i>
+                        <button onclick="shareToLine()" class="w-12 h-12 flex items-center justify-center bg-green-50 text-green-600 rounded-2xl border border-green-100 hover:bg-green-100 transition-colors shadow-sm">
+                            <i class="fa-solid fa-share-nodes text-xl"></i>
                         </button>
                     </div>
                 </div>
                 
-                <a id="playlistBtn" href="#" target="_blank" class="flex items-center justify-center w-full py-3 px-4 bg-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
-                    <i class="fa-solid fa-clapperboard mr-2"></i> ดู Playlist ทั้งหมดบน YouTube
+                <a id="playlistBtn" href="#" target="_blank" class="flex items-center justify-center w-full py-4 bg-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95">
+                    <i class="fa-solid fa-layer-group mr-2 text-lg"></i> เปิด Playlist ทั้งหมดใน YouTube
                 </a>
             </div>
 
-            <div id="videoList" class="space-y-4">
+            <div id="videoList" class="space-y-5">
                 </div>
         </main>
     </div>
@@ -108,39 +119,39 @@
                     const packs = Object.keys(MASTER_DATA);
                     if (packs.length > 0) showPack(packs[0], 0);
 
-                    // แสดงผลหน้าจอ
+                    // ปิด Loading และแสดงผล
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('mainUI').classList.remove('hidden');
                     setTimeout(() => document.getElementById('mainUI').classList.add('opacity-100'), 50);
                 } else {
-                    alert("ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
+                    alert("ไม่พบข้อมูลสมาชิก หรือมีข้อผิดพลาดเกิดขึ้น");
                 }
             } catch (err) {
                 console.error("Init Error:", err);
             }
         }
 
-        // 1. สร้างปุ่มเลือก Pack (เมนูบน)
+        // 1. ฟังก์ชันสร้างปุ่มเมนู (Pill Tabs)
         function renderMenu() {
             const menu = document.getElementById('packMenu');
             menu.innerHTML = "";
             
             Object.keys(MASTER_DATA).forEach((packName, index) => {
                 const btn = document.createElement('button');
-                // ปรับ UI ปุ่มให้นุ่มนวลและกดง่าย
-                btn.className = "pack-btn px-6 py-2.5 rounded-2xl text-sm font-semibold whitespace-nowrap bg-white text-gray-500 flex-shrink-0";
+                btn.className = "pack-btn px-7 py-3 rounded-2xl text-sm font-bold whitespace-nowrap bg-white text-gray-400 flex-shrink-0";
                 btn.id = `btn-${index}`;
-                btn.innerText = packName;
+                btn.innerText = packName; // จะเป็น "Pack 1", "Pack 2" ตามที่คุณแก้ใน Col B
                 btn.onclick = () => showPack(packName, index);
                 menu.appendChild(btn);
             });
         }
 
-        // 2. แสดงข้อมูลวิดีโอใน Pack
+        // 2. ฟังก์ชันแสดงข้อมูลในแต่ละ Pack
         function showPack(packName, index) {
             // จัดการสถานะปุ่ม Active
             document.querySelectorAll('#packMenu button').forEach(b => b.classList.remove('active-pack'));
-            document.getElementById(`btn-${index}`).classList.add('active-pack');
+            const activeBtn = document.getElementById(`btn-${index}`);
+            if (activeBtn) activeBtn.classList.add('active-pack');
 
             const packInfo = MASTER_DATA[packName];
             document.getElementById('currentPackTitle').innerText = packName;
@@ -154,7 +165,7 @@
                 pBtn.style.display = 'none';
             }
 
-            // ล้างรายการเก่าและสร้างรายการใหม่
+            // ล้างข้อมูลเก่าและสร้างรายการวิดีโอใหม่
             const videoList = document.getElementById('videoList');
             videoList.innerHTML = "";
 
@@ -163,21 +174,21 @@
                 const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/160x90';
 
                 const card = `
-                    <div class="video-card bg-white rounded-3xl shadow-sm border border-white p-3.5 flex gap-4 hover:shadow-md transition-all active:bg-gray-50" onclick="window.open('${video.url}', '_blank')">
-                        <div class="relative flex-shrink-0 w-32 h-20 rounded-2xl overflow-hidden bg-gray-100">
+                    <div class="video-card bg-white rounded-[2rem] shadow-sm border border-white p-4 flex gap-5 hover:shadow-md transition-all active:bg-gray-50" onclick="window.open('${video.url}', '_blank')">
+                        <div class="relative flex-shrink-0 w-36 h-20 rounded-2xl overflow-hidden shadow-inner bg-gray-100">
                             <img src="${thumbUrl}" class="w-full h-full object-cover" alt="">
                             <div class="absolute inset-0 flex items-center justify-center bg-black/10">
-                                <div class="w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
-                                    <i class="fa-solid fa-play text-blue-600 text-[10px] ml-0.5"></i>
+                                <div class="w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+                                    <i class="fa-solid fa-play text-blue-600 text-xs ml-0.5"></i>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-col justify-center py-1">
-                            <h3 class="text-[17px] font-bold text-gray-800 leading-snug">
+                        <div class="flex flex-col justify-center">
+                            <h3 class="text-[17px] font-bold text-gray-800 leading-tight">
                                 <span class="text-blue-600 mr-0.5">${video.no}.</span> ${video.title}
                             </h3>
-                            <div class="flex items-center mt-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                <i class="fa-brands fa-youtube text-red-500 mr-1.5 text-xs"></i> คลิกรับชมตอนนี้
+                            <div class="flex items-center mt-2.5 text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+                                <i class="fa-brands fa-youtube text-red-500 mr-2 text-sm"></i> คลิกเพื่อรับชม
                             </div>
                         </div>
                     </div>
@@ -186,28 +197,63 @@
             });
         }
 
-        // 3. ฟังก์ชันพิเศษ (Share / Copy)
+        // 3. ระบบสร้างข้อความ Template สำหรับส่งต่อ
+        function generatePackTemplate(packName) {
+            const packInfo = MASTER_DATA[packName];
+            if (!packInfo) return "";
+
+            let template = `${packName}\n--------------\n\n`;
+
+            // ส่วนลิงก์ Playlist
+            if (packInfo.playlistUrl) {
+                template += `Playlist (${packName})\n${packInfo.playlistUrl}\n\n`;
+            }
+
+            // ส่วนรายการวิดีโอ (วนลูปตามข้อมูลใน Pack)
+            packInfo.videos.forEach(video => {
+                // รูปแบบ: [เลข] ([ชื่อ Pack]) : [ชื่อวิดีโอ] \n [URL]
+                template += `${video.no} (${packName}) : ${video.title}\n${video.url}\n\n`;
+            });
+
+            return template.trim(); // ตัดช่องว่างส่วนเกินท้ายข้อความ
+        }
+
+        // 4. ฟังก์ชันคัดลอกลง Clipboard
         function copyCurrentLink() {
-            const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                alert("คัดลอกลิงก์เรียบร้อย!");
+            const packName = document.getElementById('currentPackTitle').innerText;
+            const textToCopy = generatePackTemplate(packName);
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert(`คัดลอกข้อมูล ${packName} ลง Clipboard เรียบร้อยแล้ว!`);
             });
         }
 
+        // 5. ฟังก์ชันแชร์ไปที่ LINE (Share Target Picker)
         async function shareToLine() {
             if (!liff.isApiAvailable('shareTargetPicker')) {
-                alert("ระบบไม่รองรับการแชร์ในขณะนี้");
+                alert("กรุณาเปิดฟีเจอร์ shareTargetPicker ใน LINE Console");
                 return;
             }
+
+            const packName = document.getElementById('currentPackTitle').innerText;
+            const shareText = generatePackTemplate(packName);
+
             try {
-                await liff.shareTargetPicker([
-                    { "type": "text", "text": "hello" }
+                const result = await liff.shareTargetPicker([
+                    {
+                        "type": "text",
+                        "text": shareText
+                    }
                 ]);
+                if (result) {
+                    console.log("แชร์สำเร็จ");
+                }
             } catch (error) {
-                console.error("Share failed", error);
+                console.error("Share failed:", error);
             }
         }
 
+        // 6. แกะ YouTube ID เพื่อดึงรูปพรีวิว
         function extractYoutubeID(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
