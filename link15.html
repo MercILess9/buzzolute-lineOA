@@ -9,42 +9,35 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <script>
-        // ตั้งค่า Tailwind Dark Mode
-        tailwind.config = {
-            darkMode: 'class',
-        }
+        tailwind.config = { darkMode: 'class' }
     </script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
         body { font-family: 'Kanit', sans-serif; transition: background-color 0.3s; }
         
-        /* Glassmorphism Effect */
+        /* Glassmorphism Header */
         .glass { 
-            background: rgba(255, 255, 255, 0.8); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px); 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
         }
         .dark .glass { 
-            background: rgba(15, 23, 42, 0.8); 
-            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.9); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .video-card { transition: all 0.2s ease; position: relative; }
+        .video-card { transition: all 0.2s ease; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* Badge สไตล์ใหม่ */
-        .track-badge {
-            position: absolute; top: 6px; left: 6px;
-            background: #3b82f6; color: white;
-            padding: 2px 6px; border-radius: 6px;
-            font-size: 10px; font-weight: 800; z-index: 10;
+        /* Custom Select */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 0.8rem;
         }
 
-        /* Fast Spin */
         .fast-spin { animation: spin 0.6s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .hidden { display: none; }
     </style>
 </head>
@@ -57,50 +50,50 @@
 
     <div id="mainUI" class="hidden opacity-0 transition-opacity duration-300">
         
-        <div class="p-4 bg-white dark:bg-slate-800 border-b dark:border-slate-700 space-y-3">
-            <div class="flex items-center justify-between gap-3">
-                <div class="flex-1 relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" 
-                        placeholder="ค้นหาวิดีโอจากทุก Pack..." 
-                        class="w-full h-11 pl-10 pr-4 bg-gray-100 dark:bg-slate-700 border-none rounded-2xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+        <header class="sticky top-0 z-50 glass border-b p-3">
+            <div class="max-w-md mx-auto flex items-center gap-2">
+                <div class="flex-1 min-w-0">
+                    <select id="packSelect" onchange="handlePackChange(this.value)" 
+                        class="w-full h-10 pl-3 pr-8 bg-gray-100 dark:bg-slate-800 border-none rounded-xl text-sm font-bold text-blue-600 dark:text-blue-400 outline-none">
+                    </select>
                 </div>
-                <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-lg">
+                
+                <div class="relative flex-[1.5]">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" 
+                        placeholder="ค้นหา..." 
+                        class="w-full h-10 pl-8 pr-8 bg-gray-100 dark:bg-slate-800 border-none rounded-xl text-sm outline-none focus:ring-1 focus:ring-blue-500">
+                    <button id="clearSearch" onclick="clearSearch()" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hidden">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                </div>
+
+                <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
                     <i id="darkIcon" class="fa-solid fa-moon text-slate-600 dark:text-yellow-400"></i>
                 </button>
             </div>
-        </div>
+        </header>
 
-        <nav class="sticky top-0 z-40 glass border-b p-3 shadow-sm">
-            <div class="flex gap-2 max-w-md mx-auto">
-                <div class="flex-1 relative">
-                    <select id="packSelect" onchange="handlePackChange(this.value)" 
-                        class="w-full h-11 pl-4 pr-10 bg-white dark:bg-slate-800 border dark:border-slate-600 rounded-xl text-sm font-bold text-blue-600 dark:text-blue-400 outline-none appearance-none">
-                        </select>
+        <main class="p-4 max-w-md mx-auto">
+            <section id="packActionRow" class="mb-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 id="currentPackTitle" class="text-lg font-black text-slate-800 dark:text-white truncate"></h2>
+                    <a id="playlistBtn" href="#" target="_blank" class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-play-circle mr-1"></i> Playlist
+                    </a>
                 </div>
-                <a id="playlistBtn" href="#" target="_blank" class="h-11 px-4 bg-blue-600 text-white rounded-xl flex items-center justify-center text-xs font-bold shadow-lg shadow-blue-200 dark:shadow-none">
-                    <i class="fa-solid fa-list-ul mr-2"></i> Playlist
-                </a>
-            </div>
-        </nav>
-
-        <main class="p-5 max-w-md mx-auto">
-            <section id="packInfoSection" class="mb-6">
-                <h2 id="currentPackTitle" class="text-2xl font-extrabold mb-5 tracking-tight"></h2>
                 
                 <div class="flex gap-2">
-                    <button id="copyBtn" onclick="copyCurrentLink()" 
-                        class="flex-[4] h-14 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-100 dark:shadow-none flex items-center justify-center gap-2 active:scale-95 transition-all">
-                        <i class="fa-regular fa-copy text-lg"></i> คัดลอกข้อมูลทั้งหมด
+                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="flex-1 h-11 bg-blue-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-200 dark:shadow-none active:scale-95 transition-all">
+                        <i class="fa-regular fa-copy"></i> คัดลอกทั้งหมด
                     </button>
-                    <button onclick="shareToLine()" 
-                        class="flex-1 h-14 bg-green-500 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-green-100 dark:shadow-none active:scale-90 transition-all">
-                        <i class="fa-solid fa-share-nodes text-xl"></i>
+                    <button onclick="shareToLine()" class="w-12 h-11 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-green-100 dark:shadow-none active:scale-90 transition-all">
+                        <i class="fa-solid fa-share-nodes"></i>
                     </button>
                 </div>
             </section>
 
-            <div id="videoList" class="space-y-4">
+            <div id="videoList" class="space-y-3">
                 </div>
         </main>
     </div>
@@ -113,7 +106,6 @@
         let isDarkMode = false;
 
         window.onload = async function() {
-            // โหลด Dark Mode เริ่มต้น
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
                 isDarkMode = true;
@@ -139,16 +131,11 @@
             } catch (err) { console.error(err); }
         }
 
-        // --- Dark Mode Logic ---
+        // --- Dark Mode ---
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
-            if (isDarkMode) {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            }
+            document.documentElement.classList.toggle('dark', isDarkMode);
+            localStorage.theme = isDarkMode ? 'dark' : 'light';
             updateDarkIcon();
         }
 
@@ -157,19 +144,21 @@
             icon.className = isDarkMode ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon text-slate-600';
         }
 
-        // --- Search Logic (ค้นหาทุก Pack) ---
+        // --- Search ---
         function handleSearch(query) {
             const videoList = document.getElementById('videoList');
-            const infoSection = document.getElementById('packInfoSection');
+            const actionRow = document.getElementById('packActionRow');
+            const clearBtn = document.getElementById('clearSearch');
             
+            clearBtn.classList.toggle('hidden', !query);
+
             if (!query.trim()) {
-                infoSection.classList.remove('hidden');
+                actionRow.classList.remove('hidden');
                 showPack(document.getElementById('packSelect').value);
                 return;
             }
 
-            // ซ่อนหัวข้อ Pack เมื่อค้นหา
-            infoSection.classList.add('hidden');
+            actionRow.classList.add('hidden');
             videoList.innerHTML = "";
             let resultsFound = false;
 
@@ -182,9 +171,13 @@
                 });
             });
 
-            if (!resultsFound) {
-                videoList.innerHTML = `<p class="text-center text-gray-400 py-10">ไม่พบวิดีโอที่ค้นหา</p>`;
-            }
+            if (!resultsFound) videoList.innerHTML = `<p class="text-center text-gray-400 py-10 text-sm">ไม่พบวิดีโอ</p>`;
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            input.value = "";
+            handleSearch("");
         }
 
         function renderDropdown() {
@@ -197,8 +190,7 @@
         }
 
         function handlePackChange(val) {
-            document.getElementById('searchInput').value = ""; // ล้างค่าค้นหาเมื่อเปลี่ยน Pack
-            document.getElementById('packInfoSection').classList.remove('hidden');
+            clearSearch();
             showPack(val);
         }
 
@@ -216,29 +208,30 @@
             });
         }
 
-        // ฟังก์ชันสร้าง Card (แยกออกมาเพื่อใช้ซ้ำตอน Search)
+        // --- Card Generator ---
         function createVideoCard(video, packName) {
             const videoID = extractYoutubeID(video.url);
             const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/120x68';
             
             return `
-                <div class="video-card bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex items-center p-2.5 gap-3">
-                    <div class="relative flex-shrink-0 w-24 h-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-700" onclick="window.open('${video.url}', '_blank')">
-                        <div class="track-badge">#${video.no}</div>
+                <div class="video-card bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-2 gap-3">
+                    <div class="relative flex-shrink-0 w-24 h-16 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700" onclick="window.open('${video.url}', '_blank')">
                         <img src="${thumbUrl}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 flex items-center justify-center bg-black/10">
-                            <i class="fa-solid fa-play text-white/80 text-[10px]"></i>
+                            <i class="fa-solid fa-play text-white/70 text-[10px]"></i>
                         </div>
                     </div>
                     <div class="flex-1 min-w-0" onclick="window.open('${video.url}', '_blank')">
-                        <h3 class="text-[14px] font-bold leading-tight mb-1 line-clamp-2">${video.title}</h3>
-                        <p class="text-[10px] text-gray-400 dark:text-gray-500 truncate">${video.url}</p>
+                        <h3 class="text-[14px] font-bold text-blue-900 dark:text-blue-300 leading-tight line-clamp-2 mb-1">${video.title}</h3>
+                        <p class="text-[10px] text-gray-400 dark:text-gray-500 font-medium tracking-tight">
+                            Track ${video.no} | ${packName}
+                        </p>
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <button onclick="copySingle('${video.url}', this)" class="w-9 h-9 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-400 flex items-center justify-center transition-all">
+                    <div class="flex flex-col gap-1.5 pr-1">
+                        <button onclick="copySingle('${video.url}', this)" class="w-8 h-8 rounded-lg bg-gray-50 dark:bg-slate-700 text-gray-400 flex items-center justify-center transition-all">
                             <i class="fa-regular fa-copy text-xs"></i>
                         </button>
-                        <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-9 h-9 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-400 flex items-center justify-center transition-all">
+                        <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-8 h-8 rounded-lg bg-gray-50 dark:bg-slate-700 text-gray-400 flex items-center justify-center transition-all">
                             <i class="fa-solid fa-share-nodes text-xs"></i>
                         </button>
                     </div>
@@ -246,7 +239,7 @@
             `;
         }
 
-        // --- Helper Functions ---
+        // --- Utils ---
         function copySingle(url, btn) {
             navigator.clipboard.writeText(url).then(() => {
                 const icon = btn.querySelector('i');
@@ -263,10 +256,10 @@
         function copyCurrentLink() {
             const packName = document.getElementById('packSelect').value;
             const textToCopy = generatePackTemplate(packName);
-            const btn = document.getElementById('copyBtn');
+            const btn = document.getElementById('copyAllBtn');
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const original = btn.innerHTML;
-                btn.innerHTML = `<i class="fa-solid fa-check"></i> คัดลอกเรียบร้อย!`;
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> คัดลอกสำเร็จ!`;
                 btn.classList.replace('bg-blue-600', 'bg-green-600');
                 setTimeout(() => {
                     btn.innerHTML = original;
