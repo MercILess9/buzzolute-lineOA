@@ -17,14 +17,34 @@
         .animate-pulse { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
         /* Glassmorphism Effect */
-        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 
         /* Smooth Transitions */
-        .page-transition { transition: opacity 0.3s ease, transform 0.3s ease; }
-        .video-card { transition: transform 0.1s ease, background-color 0.2s; }
-        .video-card:active { transform: scale(0.97); background-color: #f1f5f9; }
+        .video-card { transition: transform 0.2s ease, box-shadow 0.2s; position: relative; }
+        .video-card:active { transform: scale(0.98); }
 
-        /* Custom Dropdown Styling */
+        /* Floating Badge */
+        .track-badge {
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            background: #2563eb;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);
+            z-index: 10;
+            border: 2px solid white;
+        }
+
+        .hidden { display: none; }
+        
         select {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -32,55 +52,45 @@
         }
     </style>
 </head>
-<body class="pb-10 overflow-x-hidden">
+<body class="pb-10">
 
     <div id="loading" class="p-5 space-y-6">
-        <div class="flex gap-2">
-            <div class="h-12 bg-gray-200 rounded-2xl flex-1 animate-pulse"></div>
-            <div class="h-12 w-24 bg-gray-200 rounded-2xl animate-pulse"></div>
+        <div class="h-12 bg-gray-200 rounded-2xl animate-pulse"></div>
+        <div class="h-40 bg-gray-100 rounded-[2rem] animate-pulse"></div>
+        <div class="space-y-4">
+            <div class="h-28 bg-gray-100 rounded-[2rem] animate-pulse"></div>
+            <div class="h-28 bg-gray-100 rounded-[2rem] animate-pulse"></div>
         </div>
-        <div class="h-8 bg-gray-200 rounded-lg w-1/2 animate-pulse"></div>
-        <div class="flex gap-2">
-            <div class="h-12 bg-gray-200 rounded-2xl flex-1 animate-pulse"></div>
-            <div class="h-12 w-14 bg-gray-200 rounded-2xl animate-pulse"></div>
-        </div>
-        <div class="space-y-4 pt-4">
-            <div class="h-24 bg-gray-100 rounded-[2rem] animate-pulse"></div>
-            <div class="h-24 bg-gray-100 rounded-[2rem] animate-pulse"></div>
-            <div class="h-24 bg-gray-100 rounded-[2rem] animate-pulse"></div>
-        </div>
-        <p class="text-center text-gray-400 text-sm font-medium pt-4">กำลังโหลดข้อมูล</p>
     </div>
 
-    <div id="mainUI" class="hidden opacity-0 page-transition">
+    <div id="mainUI" class="hidden opacity-0 transition-opacity duration-300">
         
-        <nav class="sticky top-0 z-40 glass border-b border-white/20 p-4">
+        <nav class="sticky top-0 z-40 glass border-b p-4">
             <div class="flex gap-2 max-w-md mx-auto">
                 <div class="flex-1 relative">
-                    <select id="packSelect" onchange="handlePackChange(this.value)" class="w-full h-12 pl-4 pr-10 bg-white shadow-sm border border-blue-100 rounded-2xl text-[15px] font-bold text-blue-600 focus:ring-2 focus:ring-blue-500 transition-all">
-                        </select>
+                    <select id="packSelect" onchange="handlePackChange(this.value)" class="w-full h-12 pl-4 pr-10 bg-white shadow-sm border border-blue-100 rounded-2xl text-[15px] font-bold text-blue-600">
+                    </select>
                 </div>
-                <a id="playlistBtn" href="#" target="_blank" class="h-12 px-4 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-200 active:scale-95 transition-all">
+                <a id="playlistBtn" href="#" target="_blank" class="h-12 px-4 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-200">
                     <i class="fa-solid fa-list-check mr-2"></i> Playlist
                 </a>
             </div>
         </nav>
 
-        <main class="p-5 max-w-md mx-auto">
+        <main class="p-6 max-w-md mx-auto">
             <section class="mb-8">
-                <h2 id="currentPackTitle" class="text-3xl font-extrabold text-slate-800 tracking-tight mb-5"></h2>
-                
+                <h2 id="currentPackTitle" class="text-3xl font-extrabold text-slate-800 mb-5"></h2>
                 <div class="flex gap-2">
-                    <button id="copyBtn" onclick="copyCurrentLink()" class="flex-[3] h-14 bg-blue-600 text-white rounded-[1.2rem] font-bold shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2">
-                        <i class="fa-regular fa-copy text-lg"></i> คัดลอกข้อมูล
+                    <button id="copyBtn" onclick="copyCurrentLink()" class="flex-[3] h-14 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-100 flex items-center justify-center gap-2">
+                        <i class="fa-regular fa-copy"></i> คัดลอกทั้งชุด
                     </button>
-                    <button onclick="shareToLine()" class="flex-1 h-14 bg-green-500 text-white rounded-[1.2rem] flex items-center justify-center shadow-xl shadow-green-100 hover:bg-green-600 active:scale-90 transition-all">
+                    <button onclick="shareToLine()" class="flex-1 h-14 bg-green-500 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-green-100">
                         <i class="fa-solid fa-share-nodes text-xl"></i>
                     </button>
                 </div>
             </section>
 
-            <div id="videoList" class="space-y-4">
+            <div id="videoList" class="space-y-8">
                 </div>
         </main>
     </div>
@@ -91,9 +101,7 @@
     <script>
         let MASTER_DATA = {};
 
-        window.onload = async function() {
-            await init();
-        };
+        window.onload = async function() { await init(); };
 
         async function init() {
             try {
@@ -101,53 +109,30 @@
                 if (auth && auth.status === "success") {
                     MASTER_DATA = auth.data;
                     renderDropdown();
-                    
                     const packs = Object.keys(MASTER_DATA);
                     if (packs.length > 0) showPack(packs[0]);
-
-                    // Switch from Skeleton to Content
                     document.getElementById('loading').classList.add('hidden');
                     const mainUI = document.getElementById('mainUI');
                     mainUI.classList.remove('hidden');
-                    setTimeout(() => {
-                        mainUI.classList.add('opacity-100');
-                        mainUI.style.transform = 'translateY(0)';
-                    }, 50);
+                    setTimeout(() => mainUI.classList.add('opacity-100'), 50);
                 }
-            } catch (err) {
-                console.error(err);
-                alert("เกิดข้อผิดพลาดในการโหลดข้อมูล");
-            }
+            } catch (err) { console.error(err); }
         }
 
         function renderDropdown() {
             const select = document.getElementById('packSelect');
-            select.innerHTML = "";
-            Object.keys(MASTER_DATA).forEach(packName => {
-                const option = document.createElement('option');
-                option.value = packName;
-                option.innerText = packName;
-                select.appendChild(option);
+            Object.keys(MASTER_DATA).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name; opt.innerText = name;
+                select.appendChild(opt);
             });
         }
 
-        function handlePackChange(val) {
-            // ใส่ Animation เล็กน้อยตอนเปลี่ยนข้อมูล
-            const list = document.getElementById('videoList');
-            list.style.opacity = 0;
-            list.style.transform = 'translateY(10px)';
-            
-            setTimeout(() => {
-                showPack(val);
-                list.style.opacity = 1;
-                list.style.transform = 'translateY(0)';
-            }, 200);
-        }
+        function handlePackChange(val) { showPack(val); }
 
         function showPack(packName) {
             const packInfo = MASTER_DATA[packName];
             document.getElementById('currentPackTitle').innerText = packName;
-            
             const pBtn = document.getElementById('playlistBtn');
             pBtn.href = packInfo.playlistUrl || "#";
             pBtn.style.display = packInfo.playlistUrl ? 'flex' : 'none';
@@ -160,60 +145,69 @@
                 const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/160x90';
 
                 videoList.innerHTML += `
-                    <div class="video-card bg-white rounded-[2rem] shadow-sm p-4 flex gap-5 border border-white ring-1 ring-slate-100" 
-                         onclick="window.open('${video.url}', '_blank')"
-                         style="animation: slideUp 0.4s ease forwards ${idx * 0.05}s; opacity: 0;">
-                        <div class="relative flex-shrink-0 w-32 h-20 rounded-2xl overflow-hidden bg-slate-50 shadow-inner">
-                            <img src="${thumbUrl}" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 flex items-center justify-center bg-black/5 backdrop-blur-[1px]">
-                                <div class="w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-md">
-                                    <i class="fa-solid fa-play text-blue-600 text-[10px] ml-0.5"></i>
+                    <div class="video-card bg-white rounded-[2rem] shadow-sm p-4 border border-slate-100">
+                        <div class="track-badge">${video.no}</div>
+                        
+                        <div class="flex gap-4 mb-3" onclick="window.open('${video.url}', '_blank')">
+                            <div class="relative flex-shrink-0 w-24 h-16 rounded-xl overflow-hidden bg-slate-100 shadow-inner">
+                                <img src="${thumbUrl}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 flex items-center justify-center bg-black/5">
+                                    <i class="fa-solid fa-play text-white text-[10px]"></i>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex flex-col justify-center overflow-hidden pr-2">
-                            <h3 class="text-[17px] font-bold text-slate-800 leading-tight">
-                                <span class="text-blue-600 mr-0.5">${video.no}.</span> ${video.title}
-                            </h3>
-                            <div class="flex items-center mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                <i class="fa-brands fa-youtube text-red-500 mr-1.5 text-sm"></i> Watch Now
+                            <div class="flex flex-col justify-center overflow-hidden">
+                                <h3 class="text-[15px] font-bold text-slate-800 leading-tight mb-1 truncate">${video.title}</h3>
+                                <p class="text-[11px] text-blue-500 font-medium truncate">${video.url}</p>
                             </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-2 border-t border-slate-50">
+                            <button onclick="copySingle('${video.url}', this)" class="flex-1 h-9 bg-slate-100 text-slate-600 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all">
+                                <i class="fa-regular fa-copy"></i> Copy Link
+                            </button>
+                            <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-12 h-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center transition-all">
+                                <i class="fa-solid fa-share-nodes text-xs"></i>
+                            </button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        // CSS Animation for List
-        const style = document.createElement('style');
-        style.innerHTML = `@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }`;
-        document.head.appendChild(style);
+        // --- Helper Functions ---
 
-        function generatePackTemplate(packName) {
-            const packInfo = MASTER_DATA[packName];
-            let template = `${packName}\n--------------\n\n`;
-            if (packInfo.playlistUrl) template += `Playlist (${packName})\n${packInfo.playlistUrl}\n\n`;
-            packInfo.videos.forEach(v => {
-                template += `${v.no} (${packName}) : ${v.title}\n${v.url}\n\n`;
+        function copySingle(url, btn) {
+            navigator.clipboard.writeText(url).then(() => {
+                const original = btn.innerHTML;
+                btn.innerHTML = `<i class="fa-solid fa-check"></i> Done`;
+                btn.classList.replace('bg-slate-100', 'bg-green-100');
+                btn.classList.replace('text-slate-600', 'text-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = original;
+                    btn.classList.replace('bg-green-100', 'bg-slate-100');
+                    btn.classList.replace('text-green-600', 'text-slate-600');
+                }, 1500);
             });
-            return template.trim();
+        }
+
+        async function shareSingle(url, title) {
+            if (!liff.isApiAvailable('shareTargetPicker')) return;
+            try {
+                await liff.shareTargetPicker([{ "type": "text", "text": `${title}\n${url}` }]);
+            } catch (err) { console.error(err); }
         }
 
         function copyCurrentLink() {
             const packName = document.getElementById('packSelect').value;
             const textToCopy = generatePackTemplate(packName);
             const btn = document.getElementById('copyBtn');
-
             navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalContent = btn.innerHTML;
+                const original = btn.innerHTML;
                 btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> คัดลอกแล้ว!`;
                 btn.classList.replace('bg-blue-600', 'bg-green-600');
-                btn.classList.add('scale-105');
-
                 setTimeout(() => {
-                    btn.innerHTML = originalContent;
+                    btn.innerHTML = original;
                     btn.classList.replace('bg-green-600', 'bg-blue-600');
-                    btn.classList.remove('scale-105');
                 }, 2000);
             });
         }
@@ -221,9 +215,15 @@
         async function shareToLine() {
             const packName = document.getElementById('packSelect').value;
             const shareText = generatePackTemplate(packName);
-            try {
-                await liff.shareTargetPicker([{ "type": "text", "text": shareText }]);
-            } catch (err) { console.error(err); }
+            try { await liff.shareTargetPicker([{ "type": "text", "text": shareText }]); } catch (err) { console.error(err); }
+        }
+
+        function generatePackTemplate(packName) {
+            const packInfo = MASTER_DATA[packName];
+            let template = `${packName}\n--------------\n\n`;
+            if (packInfo.playlistUrl) template += `Playlist (${packName})\n${packInfo.playlistUrl}\n\n`;
+            packInfo.videos.forEach(v => { template += `${v.no} (${packName}) : ${v.title}\n${v.url}\n\n`; });
+            return template.trim();
         }
 
         function extractYoutubeID(url) {
