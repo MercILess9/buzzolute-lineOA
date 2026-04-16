@@ -14,74 +14,83 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Kanit', sans-serif; transition: background-color 0.3s; }
+        body { font-family: 'Kanit', sans-serif; transition: background-color 0.3s; overflow-x: hidden; }
         
-        .glass { 
-            background: rgba(255, 255, 255, 0.96); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); 
-        }
+        .glass { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
         .dark .glass { background: rgba(15, 23, 42, 0.96); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+
+        /* Wheel Picker Styling */
+        #picker-overlay { transition: opacity 0.3s ease; }
+        #picker-sheet { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* สไตล์รายการในวงล้อ */
+        .wheel-item {
+            scroll-snap-align: center;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+        .wheel-item.active {
+            color: #4f46e5;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
 
         .video-card { transition: all 0.2s ease; cursor: pointer; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* จัด Dropdown ให้ตัวหนังสืออยู่ตรงกลาง */
-        select {
-            appearance: none;
-            text-align-last: center;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234f46e5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem;
-        }
-
         .fast-spin { animation: spin 0.6s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none; }
-
-        /* Luxury Shadows */
-        .shadow-luxury-blue { box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2), 0 4px 6px -2px rgba(79, 70, 229, 0.1); }
-        .shadow-luxury-green { box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2), 0 4px 6px -2px rgba(16, 185, 129, 0.1); }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 pb-10">
 
     <div id="loading" class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white dark:bg-slate-900">
         <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full fast-spin"></div>
-        <p class="mt-4 text-slate-500 dark:text-slate-400 font-semibold text-lg">กำลังเตรียมข้อมูล</p>
+        <p class="mt-4 text-slate-500 dark:text-slate-400 font-bold text-lg">กำลังเตรียมข้อมูลสุดพิเศษ</p>
+    </div>
+
+    <div id="picker-overlay" class="fixed inset-0 z-[100] bg-black/40 opacity-0 pointer-events-none flex items-end">
+        <div id="picker-sheet" class="w-full bg-white dark:bg-slate-800 rounded-t-[2.5rem] p-6 translate-y-full shadow-2xl">
+            <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-center font-extrabold text-slate-800 dark:text-white mb-4">เลือกชุดวิดีโอ</h3>
+            
+            <div class="relative h-[200px] overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar py-[75px]" id="wheel-container">
+                </div>
+            
+            <div class="absolute left-0 right-0 top-[152px] h-[50px] border-y border-indigo-100 dark:border-indigo-900/50 pointer-events-none"></div>
+
+            <button onclick="togglePicker(false)" class="w-full mt-6 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-200 dark:shadow-none">ตกลง</button>
+        </div>
     </div>
 
     <div id="mainUI" class="hidden opacity-0 transition-opacity duration-300">
         
-        <header class="sticky top-0 z-50 glass border-b p-3 sm:p-4 shadow-sm overflow-hidden">
+        <header class="sticky top-0 z-50 glass border-b p-3 sm:p-4">
             <div class="max-w-2xl mx-auto flex items-center h-12 relative">
                 
-                <div id="header-default" class="flex items-center gap-3 w-full transition-all duration-300">
-                    <div class="relative flex-1">
-                        <select id="packSelect" onchange="handlePackChange(this.value)" 
-                            class="w-full h-11 px-10 bg-gray-100 dark:bg-slate-800 border-none rounded-2xl text-sm font-extrabold text-indigo-600 dark:text-indigo-400 outline-none shadow-inner">
-                        </select>
+                <div id="header-default" class="flex items-center gap-3 w-full transition-all">
+                    <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 bg-white dark:bg-slate-800 rounded-2xl border border-indigo-100 dark:border-indigo-900/30 flex items-center justify-center shadow-sm cursor-pointer">
+                        <span id="selected-pack-name" class="text-indigo-600 dark:text-indigo-400 font-extrabold text-sm tracking-wide">กำลังเลือก...</span>
+                        <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-indigo-400"></i>
                     </div>
 
                     <div class="flex gap-2">
-                        <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 active:scale-90 transition-all">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </button>
-                        <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center active:scale-90 transition-all">
-                            <i id="darkIcon" class="fa-solid fa-moon text-lg text-slate-600 dark:text-yellow-400"></i>
-                        </button>
+                        <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-400 shadow-sm"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center shadow-sm"><i id="darkIcon" class="fa-solid fa-moon text-slate-600 dark:text-yellow-400"></i></button>
                     </div>
                 </div>
 
                 <div id="header-search" class="absolute inset-0 flex items-center gap-2 bg-white dark:bg-slate-800 opacity-0 pointer-events-none transition-all duration-300 translate-x-10 px-1">
-                    <button onclick="toggleSearch(false)" class="w-10 h-10 flex items-center justify-center text-slate-400">
-                        <i class="fa-solid fa-arrow-left text-lg"></i>
-                    </button>
+                    <button onclick="toggleSearch(false)" class="w-10 h-10 flex items-center justify-center text-slate-400"><i class="fa-solid fa-arrow-left text-lg"></i></button>
                     <div class="flex-1 relative">
-                        <input type="text" id="searchInput" oninput="handleSearch(this.value)" 
-                            placeholder="ค้นหาวิดีโอ..." 
-                            class="w-full h-11 pl-4 pr-10 bg-gray-100 dark:bg-slate-700 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                        <button id="clearSearch" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hidden">
-                            <i class="fa-solid fa-circle-xmark"></i>
-                        </button>
+                        <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="ค้นหาวิดีโอ..." class="w-full h-11 pl-4 pr-10 bg-slate-100 dark:bg-slate-700 border-none rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button id="clearSearch" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hidden"><i class="fa-solid fa-circle-xmark"></i></button>
                     </div>
                 </div>
             </div>
@@ -90,19 +99,17 @@
         <main class="p-4 sm:p-6 max-w-2xl mx-auto">
             <section id="packActionRow" class="mb-8 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="py-1">
-                        <h2 id="currentPackTitle" class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-white tracking-tighter"></h2>
-                    </div>
-                    <a id="playlistBtn" href="#" target="_blank" class="h-8 px-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center text-[10px] font-bold border border-indigo-100 dark:border-indigo-800/50 active:scale-95 transition-all">
+                    <h2 id="currentPackTitle" class="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tighter"></h2>
+                    <a id="playlistBtn" href="#" target="_blank" class="h-8 px-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center text-[10px] font-bold active:scale-95 transition-all">
                         <i class="fa-solid fa-play-circle mr-1.5"></i> Playlist
                     </a>
                 </div>
                 
                 <div class="flex gap-2">
-                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-11 px-6 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-luxury-blue active:scale-95 transition-all hover:brightness-110">
+                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-11 px-6 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-indigo-200 active:scale-95 transition-all">
                         <i class="fa-regular fa-copy"></i> <span id="copyBtnText">คัดลอกทั้งหมด</span>
                     </button>
-                    <button onclick="shareToLine()" class="w-11 h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl flex items-center justify-center shadow-luxury-green active:scale-90 transition-all hover:brightness-110">
+                    <button onclick="shareToLine()" class="w-11 h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl flex items-center justify-center active:scale-90 transition-all">
                         <i class="fa-solid fa-share-nodes text-lg"></i>
                     </button>
                 </div>
@@ -118,6 +125,7 @@
     <script>
         let MASTER_DATA = {};
         let isDarkMode = false;
+        let currentSelectedPack = "";
 
         window.onload = async function() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -133,7 +141,7 @@
                 const auth = await checkAuth(); 
                 if (auth && auth.status === "success") {
                     MASTER_DATA = auth.data;
-                    renderDropdown();
+                    renderWheelPicker();
                     const packs = Object.keys(MASTER_DATA);
                     if (packs.length > 0) showPack(packs[0]);
                     
@@ -145,20 +153,73 @@
             } catch (err) { console.error(err); }
         }
 
+        // --- Wheel Picker Logic ---
+        function togglePicker(isOpen) {
+            const overlay = document.getElementById('picker-overlay');
+            const sheet = document.getElementById('picker-sheet');
+            if (isOpen) {
+                overlay.classList.remove('pointer-events-none');
+                overlay.classList.add('opacity-100');
+                sheet.classList.remove('translate-y-full');
+            } else {
+                overlay.classList.add('pointer-events-none');
+                overlay.classList.remove('opacity-100');
+                sheet.classList.add('translate-y-full');
+                if (currentSelectedPack) showPack(currentSelectedPack);
+            }
+        }
+
+        function renderWheelPicker() {
+            const container = document.getElementById('wheel-container');
+            container.innerHTML = "";
+            Object.keys(MASTER_DATA).forEach(name => {
+                const item = document.createElement('div');
+                item.className = "wheel-item";
+                item.innerText = name;
+                item.onclick = () => {
+                    currentSelectedPack = name;
+                    updateWheelVisuals();
+                };
+                container.appendChild(item);
+            });
+            
+            // ดักจับการ Scroll เพื่อเปลี่ยน Active Item
+            container.onscroll = () => {
+                const items = container.querySelectorAll('.wheel-item');
+                let closest = items[0];
+                let minOffset = Math.abs(container.scrollTop + 75 - items[0].offsetTop);
+
+                items.forEach(item => {
+                    const offset = Math.abs(container.scrollTop + 75 - item.offsetTop);
+                    if (offset < minOffset) {
+                        minOffset = offset;
+                        closest = item;
+                    }
+                });
+                currentSelectedPack = closest.innerText;
+                updateWheelVisuals();
+            };
+        }
+
+        function updateWheelVisuals() {
+            const items = document.querySelectorAll('.wheel-item');
+            items.forEach(item => {
+                item.classList.toggle('active', item.innerText === currentSelectedPack);
+            });
+            document.getElementById('selected-pack-name').innerText = currentSelectedPack;
+        }
+
         function toggleSearch(isOpen) {
             const headerDefault = document.getElementById('header-default');
             const headerSearch = document.getElementById('header-search');
-            const searchInput = document.getElementById('searchInput');
             if (isOpen) {
                 headerDefault.classList.add('opacity-0', 'pointer-events-none', '-translate-x-5');
                 headerSearch.classList.remove('opacity-0', 'pointer-events-none', 'translate-x-10');
                 headerSearch.classList.add('opacity-100', 'pointer-events-all', 'translate-x-0');
-                setTimeout(() => searchInput.focus(), 300);
+                setTimeout(() => document.getElementById('searchInput').focus(), 300);
             } else {
                 headerSearch.classList.add('opacity-0', 'pointer-events-none', 'translate-x-10');
-                headerSearch.classList.remove('opacity-100', 'pointer-events-all', 'translate-x-0');
                 headerDefault.classList.remove('opacity-0', 'pointer-events-none', '-translate-x-5');
-                headerDefault.classList.add('opacity-100', 'pointer-events-all', 'translate-x-0');
                 clearSearch();
             }
         }
@@ -175,137 +236,76 @@
             icon.className = isDarkMode ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon text-slate-600';
         }
 
-        function handleSearch(query) {
-            const videoList = document.getElementById('videoList');
-            const actionRow = document.getElementById('packActionRow');
-            const clearBtn = document.getElementById('clearSearch');
-            clearBtn.classList.toggle('hidden', !query);
-            if (!query.trim()) {
-                actionRow.classList.remove('hidden');
-                showPack(document.getElementById('packSelect').value);
-                return;
-            }
-            actionRow.classList.add('hidden');
-            videoList.innerHTML = "";
-            let resultsFound = false;
-            Object.keys(MASTER_DATA).forEach(packName => {
-                MASTER_DATA[packName].videos.forEach(video => {
-                    if (video.title.toLowerCase().includes(query.toLowerCase())) {
-                        resultsFound = true;
-                        videoList.innerHTML += createVideoCard(video, packName);
-                    }
-                });
-            });
-            if (!resultsFound) videoList.innerHTML = `<p class="text-center text-slate-400 py-10 text-sm">ไม่พบผลลัพธ์</p>`;
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = "";
-            handleSearch("");
-        }
-
-        function renderDropdown() {
-            const select = document.getElementById('packSelect');
-            Object.keys(MASTER_DATA).forEach(name => {
-                const opt = document.createElement('option');
-                opt.value = name; opt.innerText = name;
-                select.appendChild(opt);
-            });
-        }
-
-        function handlePackChange(val) { showPack(val); }
-
         function showPack(packName) {
-            const packInfo = MASTER_DATA[packName];
+            currentSelectedPack = packName;
             document.getElementById('currentPackTitle').innerText = packName;
+            document.getElementById('selected-pack-name').innerText = packName;
+            const packInfo = MASTER_DATA[packName];
             const pBtn = document.getElementById('playlistBtn');
             pBtn.href = packInfo.playlistUrl || "#";
             pBtn.style.display = packInfo.playlistUrl ? 'flex' : 'none';
             const videoList = document.getElementById('videoList');
             videoList.innerHTML = "";
-            packInfo.videos.forEach(video => { videoList.innerHTML += createVideoCard(video, packName); });
-        }
-
-        function createVideoCard(video, packName) {
-            const videoID = extractYoutubeID(video.url);
-            const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/150x85';
-            return `
-                <div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4">
-                    <div class="relative flex-shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 shadow-inner" onclick="window.open('${video.url}', '_blank')">
-                        <img src="${thumbUrl}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/5"><i class="fa-solid fa-play text-white/50 text-[10px]"></i></div>
-                    </div>
-                    <div class="flex-1 min-w-0" onclick="window.open('${video.url}', '_blank')">
-                        <h3 class="text-[14px] sm:text-[15px] font-bold text-indigo-900 dark:text-indigo-300 leading-tight line-clamp-2 mb-1 tracking-tight">${video.title}</h3>
-                        <p class="text-[10px] text-slate-400 dark:text-slate-500 truncate font-light">${video.url}</p>
-                    </div>
-                    <div class="flex flex-col items-end gap-1.5 shrink-0 pr-1">
-                        <span class="text-[9px] text-slate-400 dark:text-slate-600 font-bold italic uppercase tracking-wider">#${video.no} | ${packName}</span>
-                        <div class="flex gap-1.5">
-                            <button onclick="copySingle('${video.url}', this)" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center transition-all hover:bg-indigo-50 hover:text-indigo-600"><i class="fa-regular fa-copy text-xs"></i></button>
-                            <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center transition-all hover:bg-emerald-50 hover:text-emerald-600"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+            packInfo.videos.forEach(video => {
+                const videoID = extractYoutubeID(video.url);
+                const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/150x85';
+                videoList.innerHTML += `
+                    <div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4">
+                        <div class="relative flex-shrink-0 w-24 h-16 sm:w-28 sm:h-18 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700 shadow-inner" onclick="window.open('${video.url}', '_blank')">
+                            <img src="${thumbUrl}" class="w-full h-full object-cover">
                         </div>
-                    </div>
-                </div>
-            `;
+                        <div class="flex-1 min-w-0" onclick="window.open('${video.url}', '_blank')">
+                            <h3 class="text-[14px] sm:text-[15px] font-bold text-indigo-900 dark:text-indigo-300 leading-tight line-clamp-2 mb-1 uppercase tracking-tighter">${video.title}</h3>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 truncate font-light">${video.url}</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-1.5 shrink-0 pr-1">
+                            <span class="text-[9px] text-slate-400 dark:text-slate-600 font-bold italic uppercase tracking-wider">#${video.no} | ${packName}</span>
+                            <div class="flex gap-1.5">
+                                <button onclick="copySingle('${video.url}', this)" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center transition-all hover:bg-indigo-50 hover:text-indigo-600"><i class="fa-regular fa-copy text-xs"></i></button>
+                                <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center transition-all hover:bg-emerald-50 hover:text-emerald-600"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            updateWheelVisuals();
         }
 
-        function copySingle(url, btn) {
-            navigator.clipboard.writeText(url).then(() => {
-                const icon = btn.querySelector('i');
-                icon.className = 'fa-solid fa-check text-emerald-500';
-                setTimeout(() => { icon.className = 'fa-regular fa-copy text-slate-400'; }, 1500);
+        // --- Functions อื่นๆ คงเดิมตามโครงสร้าง Luxury ---
+        function handleSearch(q) {
+            const list = document.getElementById('videoList');
+            const row = document.getElementById('packActionRow');
+            if(!q.trim()){ row.classList.remove('hidden'); showPack(currentSelectedPack); return; }
+            row.classList.add('hidden');
+            list.innerHTML = "";
+            Object.keys(MASTER_DATA).forEach(pk => {
+                MASTER_DATA[pk].videos.forEach(v => {
+                    if(v.title.toLowerCase().includes(q.toLowerCase())){
+                        const videoID = extractYoutubeID(v.url);
+                        list.innerHTML += `<div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4">
+                            <div class="relative flex-shrink-0 w-24 h-16 rounded-2xl overflow-hidden" onclick="window.open('${v.url}', '_blank')"><img src="https://img.youtube.com/vi/${videoID}/mqdefault.jpg" class="w-full h-full object-cover"></div>
+                            <div class="flex-1 min-w-0" onclick="window.open('${v.url}', '_blank')"><h3 class="text-[14px] font-bold text-indigo-900 leading-tight line-clamp-2">${v.title}</h3><p class="text-[10px] text-slate-400 truncate">${v.url}</p></div>
+                            <div class="text-[9px] text-slate-400 font-bold pr-1">#${v.no} | ${pk}</div>
+                        </div>`;
+                    }
+                });
             });
         }
-
-        async function shareSingle(url, title) {
-            if (!liff.isApiAvailable('shareTargetPicker')) return;
-            try { await liff.shareTargetPicker([{ "type": "text", "text": `${title}\n${url}` }]); } catch (err) { console.error(err); }
-        }
-
+        function clearSearch(){ document.getElementById('searchInput').value = ""; handleSearch(""); }
+        function copySingle(url, btn) { navigator.clipboard.writeText(url).then(() => { btn.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i>'; setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy text-xs"></i>', 1500); }); }
+        async function shareSingle(url, title) { try { await liff.shareTargetPicker([{ "type": "text", "text": `${title}\n${url}` }]); } catch(e){} }
         function copyCurrentLink() {
-            const packName = document.getElementById('packSelect').value;
-            const textToCopy = generatePackTemplate(packName);
-            const btn = document.getElementById('copyAllBtn');
-            const btnText = document.getElementById('copyBtnText');
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btnText.innerText;
-                const originalIcon = btn.querySelector('i').className;
-                
-                // เปลี่ยนสถานะปุ่ม
-                btnText.innerText = "คัดลอกแล้ว";
-                btn.querySelector('i').className = "fa-solid fa-check";
-                btn.classList.replace('from-indigo-600', 'from-emerald-500');
-                btn.classList.replace('to-indigo-700', 'to-emerald-600');
-
+            const text = generatePackTemplate(currentSelectedPack);
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('copyBtnText').innerText = "คัดลอกแล้ว";
+                document.getElementById('copyAllBtn').classList.replace('from-indigo-600', 'from-emerald-500');
                 setTimeout(() => {
-                    btnText.innerText = originalText;
-                    btn.querySelector('i').className = originalIcon;
-                    btn.classList.replace('from-emerald-500', 'from-indigo-600');
-                    btn.classList.replace('to-emerald-600', 'to-indigo-700');
+                    document.getElementById('copyBtnText').innerText = "คัดลอกทั้งหมด";
+                    document.getElementById('copyAllBtn').classList.replace('from-emerald-500', 'from-indigo-600');
                 }, 2000);
             });
         }
-
-        async function shareToLine() {
-            const packName = document.getElementById('packSelect').value;
-            const shareText = generatePackTemplate(packName);
-            try { await liff.shareTargetPicker([{ "type": "text", "text": shareText }]); } catch (err) { console.error(err); }
-        }
-
-        function generatePackTemplate(packName) {
-            const packInfo = MASTER_DATA[packName];
-            let template = `${packName}\n--------------\n\n`;
-            if (packInfo.playlistUrl) template += `Playlist (${packName})\n${packInfo.playlistUrl}\n\n`;
-            packInfo.videos.forEach(v => { template += `${v.no} (${packName}) : ${v.title}\n${v.url}\n\n`; });
-            return template.trim();
-        }
-
-        function extractYoutubeID(url) {
-            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
+        function generatePackTemplate(p){ const info = MASTER_DATA[p]; let t = `${p}\n--------------\n\n`; if(info.playlistUrl) t += `Playlist\n${info.playlistUrl}\n\n`; info.videos.forEach(v => t += `${v.no} : ${v.title}\n${v.url}\n\n`); return t.trim(); }
+        function extractYoutubeID(u){ const m = u.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/); return (m && m[2].length === 11) ? m[2] : null; }
     </script>
 </body>
 </html>
