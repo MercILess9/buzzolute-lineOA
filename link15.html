@@ -24,7 +24,6 @@
         .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .dark .glass { background: rgba(15, 23, 42, 0.96); }
 
-        /* Modal Base */
         .modal-overlay { 
             position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
             background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);
@@ -33,28 +32,21 @@
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-box { 
-            width: 90%; max-width: 400px; background: white; border-radius: 2.5rem;
-            padding: 2rem; transform: scale(0.9); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 95%; max-width: 450px; background: white; border-radius: 2.5rem;
+            padding: 1.5rem; transform: scale(0.9); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .dark .modal-box { background: #1e293b; color: white; }
         .active .modal-box { transform: scale(1); }
 
-        /* Wheel Picker */
-        #wheel-container { 
-            height: 200px; overflow-y: auto; scroll-snap-type: y mandatory; 
-            padding: 75px 0;
-        }
-        .wheel-item {
-            height: 50px; display: flex; align-items: center; justify-content: center;
-            scroll-snap-align: center; color: #94a3b8; font-weight: 500; transition: 0.3s;
-        }
-        .wheel-item.active { color: #4f46e5; font-size: 1.4rem; font-weight: 800; }
-
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
         .grad-indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+        .grad-emerald { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        
         .fast-spin { animation: spin 0.6s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 pb-10">
@@ -67,55 +59,70 @@
     <div id="picker-overlay" class="modal-overlay">
         <div class="modal-box text-center shadow-2xl relative">
             <h3 class="font-extrabold text-xl mb-6 text-indigo-600">เลือก</h3>
-            <div id="wheel-container" class="no-scrollbar relative"></div>
-            <div class="absolute left-8 right-8 top-[152px] h-[50px] border-y-2 border-indigo-100 dark:border-indigo-900/30 pointer-events-none"></div>
+            <div id="wheel-container" class="no-scrollbar h-[200px] overflow-y-auto snap-y snap-mandatory py-[75px]"></div>
+            <div class="absolute left-8 right-8 top-[148px] h-[50px] border-y-2 border-indigo-100 dark:border-indigo-900/30 pointer-events-none"></div>
             <button onclick="togglePicker(false)" class="w-full mt-8 py-4 grad-indigo text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-all">ตกลง</button>
         </div>
     </div>
 
     <div id="copy-selector-overlay" class="modal-overlay">
-        <div class="modal-box flex flex-col max-h-[80vh] shadow-2xl">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-extrabold text-lg text-indigo-600">เลือกที่จะคัดลอก</h3>
-                <button onclick="toggleCopySelector(false)" class="text-slate-400"><i class="fa-solid fa-circle-xmark text-xl"></i></button>
-            </div>
+        <div class="modal-box flex flex-col max-h-[85vh] shadow-2xl relative">
             
-            <div class="flex items-center gap-2 mb-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
-                <label for="selectAll" class="text-sm font-bold cursor-pointer">เลือกทั้งหมด</label>
+            <div class="flex items-center justify-between mb-4 pb-2 border-b dark:border-slate-700">
+                <h3 class="font-black text-lg">จัดการข้อมูล</h3>
+                <button onclick="toggleCopySelector(false)" class="text-slate-400 p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
-            <div id="copy-options-list" class="flex-1 overflow-y-auto space-y-2 no-scrollbar pr-1"></div>
+            <div class="flex items-center justify-between mb-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-2xl">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                    <label for="selectAll" class="text-sm font-bold cursor-pointer">เลือกทั้งหมด</label>
+                </div>
+                <div class="flex items-center gap-2 border-l pl-3 dark:border-slate-700">
+                    <label class="text-[11px] font-bold text-slate-400">เอาเลข No</label>
+                    <input type="checkbox" id="includeNo" checked class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                </div>
+            </div>
 
-            <button onclick="executeCopySelected()" class="w-full mt-6 py-4 grad-indigo text-white rounded-2xl font-bold active:scale-95 transition-all">คัดลอกรายการที่เลือก</button>
+            <div id="copy-options-list" class="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-1">
+                </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-6">
+                <button onclick="executeCopySelected()" id="copyExecBtn" class="py-4 grad-indigo text-white rounded-2xl font-bold active:scale-95 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-copy"></i> <span>คัดลอกรายการ</span>
+                </button>
+                <button onclick="executeShareSelected()" class="py-4 grad-emerald text-white rounded-2xl font-bold active:scale-95 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> <span>แชร์</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <div id="mainUI" class="hidden opacity-0 transition-opacity duration-300">
         <header class="sticky top-0 z-50 glass border-b p-3 shadow-sm">
             <div class="max-w-2xl mx-auto flex items-center h-12 gap-3">
-                <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 grad-indigo text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-lg overflow-hidden">
+                <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 grad-indigo text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-lg">
                     <span id="selected-pack-name" class="font-extrabold text-lg truncate tracking-wide">เลือก</span>
                     <i class="fa-solid fa-chevron-down ml-2 text-xs opacity-70"></i>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
+                    <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></button>
                     <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"><i id="darkIcon" class="fa-solid fa-moon"></i></button>
                 </div>
             </div>
         </header>
 
-        <main class="p-4 sm:p-6 max-w-2xl mx-auto">
+        <main class="p-4 max-w-2xl mx-auto">
             <section class="mb-8 flex items-center justify-between">
-                <a id="playlistBtn" href="#" target="_blank" class="h-10 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center text-[13px] font-bold border border-blue-100 dark:border-blue-900/50 shadow-sm active:scale-95 transition-all">
+                <a id="playlistBtn" href="#" target="_blank" class="h-11 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center text-[13px] font-bold border border-blue-100 shadow-sm active:scale-95 transition-all">
                     <i class="fa-solid fa-play-circle mr-2"></i> Playlist
                 </a>
                 
                 <div class="flex gap-2">
-                    <button onclick="prepareCopySelector()" class="h-10 px-5 bg-indigo-600 text-white rounded-xl font-bold text-[13px] flex items-center gap-2 shadow-lg active:scale-95 transition-all">
+                    <button onclick="prepareCopySelector()" class="h-11 px-5 bg-indigo-600 text-white rounded-xl font-bold text-[13px] flex items-center gap-2 shadow-lg active:scale-95 transition-all">
                         <i class="fa-regular fa-copy"></i> คัดลอกข้อมูล
                     </button>
-                    <button onclick="shareToLine()" class="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                    <button onclick="shareToLine()" class="w-11 h-11 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
                         <i class="fa-solid fa-share-nodes text-lg"></i>
                     </button>
                 </div>
@@ -197,58 +204,88 @@
         function updateWheelVisuals() {
             const items = document.querySelectorAll('.wheel-item');
             items.forEach(item => item.classList.toggle('active', item.innerText === currentSelectedPack));
-            // แสดงชื่อแพ็กจริงเมื่อเลือกแล้ว
             if(currentSelectedPack) document.getElementById('selected-pack-name').innerText = currentSelectedPack;
         }
 
-        // --- Copy Selector Logic (Updated Format) ---
+        // --- Pro Copy Selector Logic ---
         function toggleCopySelector(o) { document.getElementById('copy-selector-overlay').classList.toggle('active', o); }
+        
         function prepareCopySelector() {
             const packInfo = MASTER_DATA[currentSelectedPack];
             const list = document.getElementById('copy-options-list');
             list.innerHTML = "";
             document.getElementById('selectAll').checked = false;
-            if (packInfo.playlistUrl) list.innerHTML += createCopyItem('playlist', `Playlist (${currentSelectedPack})`, packInfo.playlistUrl);
-            packInfo.videos.forEach(v => list.innerHTML += createCopyItem('video', `Track ${v.no} : ${v.title}`, v.url, v.title, v.no));
+
+            if (packInfo.playlistUrl) {
+                list.innerHTML += createCopyItem('playlist', `Playlist (${currentSelectedPack})`, packInfo.playlistUrl);
+            }
+            packInfo.videos.forEach(v => {
+                list.innerHTML += createCopyItem('video', `${v.no} : ${v.title}`, v.url, v.title, v.no);
+            });
             toggleCopySelector(true);
         }
+
         function createCopyItem(type, label, url, title="", no="") {
-            return `<div class="flex items-center gap-3 p-3 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-xl">
-                <input type="checkbox" class="copy-checkbox w-5 h-5 accent-indigo-600" data-type="${type}" data-url="${url}" data-title="${title}" data-no="${no}">
-                <p class="text-sm font-bold line-clamp-1 flex-1">${label}</p>
+            return `<div class="flex items-center gap-3 p-3 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl active:bg-slate-50 transition-all">
+                <input type="checkbox" class="copy-checkbox w-6 h-6 accent-indigo-600 cursor-pointer" data-type="${type}" data-url="${url}" data-title="${title}" data-no="${no}">
+                <p class="text-[13px] font-bold leading-tight line-clamp-2 flex-1 cursor-pointer" onclick="this.parentElement.querySelector('input').click()">${label}</p>
             </div>`;
         }
+
         function toggleSelectAll(checked) { document.querySelectorAll('.copy-checkbox').forEach(cb => cb.checked = checked); }
         
-        function executeCopySelected() {
+        // ฟังก์ชันสร้าง Text ตาม Option "เอาเลข No"
+        function buildSelectedText() {
             const checkboxes = document.querySelectorAll('.copy-checkbox:checked');
-            if (!checkboxes.length) return alert("กรุณาเลือกอย่างน้อย 1 รายการ");
-            
-            // ใช้ฟังก์ชันกลางในการสร้าง Text
-            let textToCopy = `${currentSelectedPack}\n--------------\n\n`;
-            
+            const includeNo = document.getElementById('includeNo').checked;
+            if (!checkboxes.length) return null;
+
+            let text = `${currentSelectedPack}\n--------------\n\n`;
             checkboxes.forEach(cb => {
                 const type = cb.dataset.type;
                 const url = cb.dataset.url;
                 if (type === 'playlist') {
-                    textToCopy += `Playlist (${currentSelectedPack})\n${url}\n\n`;
+                    text += `Playlist (${currentSelectedPack})\n${url}\n\n`;
                 } else {
                     const title = cb.dataset.title;
                     const no = cb.dataset.no;
-                    textToCopy += `${no} (${currentSelectedPack}) : ${title}\n${url}\n\n`;
+                    // ถ้าติ๊ก No ให้ใส่เลข ถ้าไม่ติ๊กให้เอาออก
+                    const prefix = includeNo ? `${no} (${currentSelectedPack}) : ` : `(${currentSelectedPack}) : `;
+                    text += `${prefix}${title}\n${url}\n\n`;
                 }
             });
+            return text.trim();
+        }
 
-            navigator.clipboard.writeText(textToCopy.trim()).then(() => {
-                toggleCopySelector(false);
-                alert("คัดลอกข้อมูลเรียบร้อย!");
+        function executeCopySelected() {
+            const finalContext = buildSelectedText();
+            if (!finalContext) return alert("กรุณาเลือกอย่างน้อย 1 รายการ");
+
+            const btn = document.getElementById('copyExecBtn');
+            const span = btn.querySelector('span');
+
+            navigator.clipboard.writeText(finalContext).then(() => {
+                const originalText = span.innerText;
+                span.innerText = "คัดลอกแล้ว!";
+                btn.classList.replace('grad-indigo', 'grad-emerald');
+                
+                setTimeout(() => {
+                    span.innerText = originalText;
+                    btn.classList.replace('grad-emerald', 'grad-indigo');
+                    toggleCopySelector(false); // ปิด popup หลังคัดลอก
+                }, 1200);
             });
+        }
+
+        async function executeShareSelected() {
+            const finalContext = buildSelectedText();
+            if (!finalContext) return alert("กรุณาเลือกอย่างน้อย 1 รายการ");
+            try { await liff.shareTargetPicker([{"type":"text","text":finalContext}]); } catch(e){}
         }
 
         // --- Core ---
         function showPack(p) {
             currentSelectedPack = p;
-            document.getElementById('selected-pack-name').innerText = p;
             const packInfo = MASTER_DATA[p];
             document.getElementById('playlistBtn').href = packInfo.playlistUrl || "#";
             const vList = document.getElementById('videoList');
@@ -286,7 +323,6 @@
         function copySingle(u,b) { navigator.clipboard.writeText(u).then(()=> { b.innerHTML='<i class="fa-solid fa-check text-emerald-500"></i>'; setTimeout(()=>b.innerHTML='<i class="fa-regular fa-copy text-xs"></i>',1500); }); }
         
         async function shareToLine() {
-            // ฟังก์ชันแชร์ ใช้ Format เดียวกับ Copy
             const textToShare = generatePackTemplate(currentSelectedPack);
             try { await liff.shareTargetPicker([{"type":"text","text":textToShare}]); } catch(e){} 
         }
@@ -295,9 +331,7 @@
             const info = MASTER_DATA[p];
             let t = `${p}\n--------------\n\n`;
             if (info.playlistUrl) t += `Playlist (${p})\n${info.playlistUrl}\n\n`;
-            info.videos.forEach(v => {
-                t += `${v.no} (${p}) : ${v.title}\n${v.url}\n\n`;
-            });
+            info.videos.forEach(v => { t += `${v.no} (${p}) : ${v.title}\n${v.url}\n\n`; });
             return t.trim();
         }
 
