@@ -96,21 +96,18 @@
         </header>
 
         <main class="p-4 sm:p-6 max-w-2xl mx-auto">
-            <section id="packActionRow" class="mb-8 flex items-center">
-                <div class="flex items-center gap-2">
-                    <a id="playlistBtn" href="#" target="_blank" class="h-10 px-4 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center text-xs font-bold border border-blue-100 dark:border-blue-900/50 shadow-sm active:scale-95 transition-all">
-                        <i class="fa-solid fa-play-circle mr-2 text-sm"></i>Playlist
-                    </a>
-                </div>
-                <div class="flex-1"></div>
-                <div class="flex gap-2">
-                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-10 px-5 bg-indigo-600 text-white rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg active:scale-95 transition-all">
-                        <i class="fa-regular fa-copy"></i> <span id="copyBtnText">คัดลอกทั้งหมด</span>
-                    </button>
-                    <button onclick="shareToLine()" class="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
-                        <i class="fa-solid fa-share-nodes"></i>
-                    </button>
-                </div>
+            <section id="packActionRow" class="mb-8 flex items-center gap-3">
+                <a id="playlistBtn" href="#" target="_blank" class="flex-[1.5] h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center text-[13px] font-bold border border-blue-100 dark:border-blue-900/50 shadow-sm active:scale-95 transition-all">
+                    <i class="fa-solid fa-play-circle mr-2 text-lg"></i>Playlist
+                </a>
+                
+                <button id="copyAllBtn" onclick="copyCurrentLink()" class="flex-1 h-12 bg-indigo-600 text-white rounded-2xl font-bold text-[11px] flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
+                    <i class="fa-regular fa-copy"></i> <span id="copyBtnText">คัดลอกทั้งหมด</span>
+                </button>
+                
+                <button onclick="shareToLine()" class="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                    <i class="fa-solid fa-share-nodes text-lg"></i>
+                </button>
             </section>
 
             <div id="videoList" class="space-y-4"></div>
@@ -194,7 +191,7 @@
 
         function createVideoCard(v, p) {
             const vidID = extractYoutubeID(v.url);
-            // ถ้าในชีตไม่มีเวลา ให้แสดง --:-- หรือใส่ placeholder ไว้ก่อน
+            // ตรวจสอบชื่อ Key ในข้อมูล (ต้องตรงกับใน Apps Script/Google Sheet)
             const duration = v.duration || "--:--"; 
 
             return `
@@ -230,7 +227,6 @@
             updateWheelVisuals();
         }
 
-        // --- Search/Dark Mode/Utils ---
         function toggleSearch(isOpen) {
             const d = document.getElementById('header-default');
             const s = document.getElementById('header-search');
@@ -245,6 +241,7 @@
                 clearSearch();
             }
         }
+
         function handleSearch(q){ 
             const v=document.getElementById('videoList'), a=document.getElementById('packActionRow'), c=document.getElementById('clearSearch');
             c.classList.toggle('hidden',!q);
@@ -254,28 +251,21 @@
                 if(vd.title.toLowerCase().includes(q.toLowerCase())){ v.innerHTML+=createVideoCard(vd,pk); }
             }));
         }
+
         function clearSearch(){ document.getElementById('searchInput').value=""; handleSearch(""); }
         function toggleDarkMode(){ isDarkMode=!isDarkMode; document.documentElement.classList.toggle('dark',isDarkMode); localStorage.theme=isDarkMode?'dark':'light'; updateDarkIcon(); }
         function updateDarkIcon(){ document.getElementById('darkIcon').className=isDarkMode?'fa-solid fa-sun text-yellow-400':'fa-solid fa-moon'; }
-        
         function copySingle(u,b){ navigator.clipboard.writeText(u).then(()=>{ b.innerHTML='<i class="fa-solid fa-check text-emerald-500"></i>'; setTimeout(()=>b.innerHTML='<i class="fa-regular fa-copy text-xs"></i>',1500); }); }
-        
-        // แก้ไขปุ่ม Share ให้กดติดแน่นอน
+
         async function shareSingle(u, t) {
-            const shareData = { title: t, text: t + "\n" + u, url: u };
+            const text = t + "\n" + u;
             try {
-                // 1. ลองใช้ LIFF ShareTargetPicker ก่อน
                 if (liff.isLoggedIn() && liff.isApiAvailable('shareTargetPicker')) {
-                    await liff.shareTargetPicker([{ "type": "text", "text": t + "\n" + u }]);
+                    await liff.shareTargetPicker([{ "type": "text", "text": text }]);
                 } else if (navigator.share) {
-                    // 2. ถ้าไม่ได้ใช้ใน LINE หรือ LIFF ไม่พร้อม ให้ใช้ Native Share ของมือถือ
-                    await navigator.share(shareData);
-                } else {
-                    // 3. ถ้าเบราว์เซอร์ไม่รองรับเลย ให้แจ้งเตือนและคัดลอกแทน
-                    navigator.clipboard.writeText(u);
-                    alert("คัดลอกลิงก์เรียบร้อยแล้ว (เบราว์เซอร์ไม่รองรับการแชร์โดยตรง)");
+                    await navigator.share({ title: t, text: text });
                 }
-            } catch (err) { console.log("Share failed", err); }
+            } catch (err) { console.log(err); }
         }
 
         async function shareToLine() {
