@@ -13,18 +13,20 @@
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Inter:wght@400;700&display=swap');
+        /* กลับมาใช้ฟอนต์ Kanit ตามที่คุณชอบ */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap');
         
         html, body { 
             max-width: 100%; 
             overflow-x: hidden; 
-            font-family: 'Sarabun', sans-serif; 
+            font-family: 'Kanit', sans-serif; 
             transition: background-color 0.3s;
         }
 
         .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .dark .glass { background: rgba(15, 23, 42, 0.96); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
 
+        /* Modal Pop-up */
         #picker-overlay { transition: all 0.3s ease; }
         #picker-sheet { 
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -33,6 +35,7 @@
         }
         #picker-overlay.active #picker-sheet { transform: scale(1); opacity: 1; }
 
+        /* Wheel Picker */
         #wheel-container { overflow-x: hidden; overflow-y: auto; scroll-snap-type: y mandatory; }
         .wheel-item {
             scroll-snap-align: center;
@@ -41,7 +44,7 @@
             height: 50px; width: 100%; font-weight: 500; color: #94a3b8;
         }
         .wheel-item.active {
-            color: #4f46e5; font-size: 1.4rem; font-weight: 700; transform: scale(1.05);
+            color: #4f46e5; font-size: 1.4rem; font-weight: 800; transform: scale(1.05);
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -76,11 +79,11 @@
             <div class="max-w-2xl mx-auto flex items-center h-12 relative gap-3">
                 <div id="header-default" class="flex items-center gap-3 w-full transition-all">
                     <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 grad-indigo text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-lg overflow-hidden">
-                        <span id="selected-pack-name" class="font-bold text-base tracking-wide truncate">กำลังเลือก...</span>
+                        <span id="selected-pack-name" class="font-extrabold text-lg sm:text-xl tracking-wide truncate">กำลังเลือก...</span>
                         <i class="fa-solid fa-chevron-down ml-2 text-xs opacity-80"></i>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shadow-sm"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shadow-sm"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
                         <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center shadow-sm"><i id="darkIcon" class="fa-solid fa-moon"></i></button>
                     </div>
                 </div>
@@ -96,18 +99,23 @@
         </header>
 
         <main class="p-4 sm:p-6 max-w-2xl mx-auto">
-            <section id="packActionRow" class="mb-8 flex items-center gap-3">
-                <a id="playlistBtn" href="#" target="_blank" class="flex-[1.5] h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center text-[13px] font-bold border border-blue-100 dark:border-blue-900/50 shadow-sm active:scale-95 transition-all">
-                    <i class="fa-solid fa-play-circle mr-2 text-lg"></i>Playlist
-                </a>
+            <section id="packActionRow" class="mb-8 flex items-center">
+                <div class="flex items-center">
+                    <a id="playlistBtn" href="#" target="_blank" class="h-11 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center text-[13px] font-bold border border-blue-100 dark:border-blue-900/50 shadow-sm active:scale-95 transition-all">
+                        <i class="fa-solid fa-play-circle mr-2 text-lg"></i> Playlist
+                    </a>
+                </div>
                 
-                <button id="copyAllBtn" onclick="copyCurrentLink()" class="flex-1 h-12 bg-indigo-600 text-white rounded-2xl font-bold text-[11px] flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all">
-                    <i class="fa-regular fa-copy"></i> <span id="copyBtnText">คัดลอกทั้งหมด</span>
-                </button>
+                <div class="flex-1"></div>
                 
-                <button onclick="shareToLine()" class="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
-                    <i class="fa-solid fa-share-nodes text-lg"></i>
-                </button>
+                <div class="flex gap-2">
+                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-11 px-5 bg-indigo-600 text-white rounded-xl font-bold text-[13px] flex items-center gap-2 shadow-lg active:scale-95 transition-all">
+                        <i class="fa-regular fa-copy"></i> <span id="copyBtnText">คัดลอกทั้งหมด</span>
+                    </button>
+                    <button onclick="shareToLine()" class="w-11 h-11 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                        <i class="fa-solid fa-share-nodes text-lg"></i>
+                    </button>
+                </div>
             </section>
 
             <div id="videoList" class="space-y-4"></div>
@@ -147,6 +155,7 @@
             } catch (err) { console.error(err); }
         }
 
+        // --- Wheel Picker ---
         function togglePicker(isOpen) {
             const overlay = document.getElementById('picker-overlay');
             if (isOpen) {
@@ -191,8 +200,8 @@
 
         function createVideoCard(v, p) {
             const vidID = extractYoutubeID(v.url);
-            // ตรวจสอบชื่อ Key ในข้อมูล (ต้องตรงกับใน Apps Script/Google Sheet)
-            const duration = v.duration || "--:--"; 
+            // ตรวจสอบทั้ง duration, Duration หรือ Time (ป้องกันการสะกดผิดใน Sheet)
+            const duration = v.duration || v.Duration || v.time || "--:--"; 
 
             return `
                 <div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4">
@@ -227,6 +236,7 @@
             updateWheelVisuals();
         }
 
+        // --- Search/Dark Mode ---
         function toggleSearch(isOpen) {
             const d = document.getElementById('header-default');
             const s = document.getElementById('header-search');
@@ -241,7 +251,6 @@
                 clearSearch();
             }
         }
-
         function handleSearch(q){ 
             const v=document.getElementById('videoList'), a=document.getElementById('packActionRow'), c=document.getElementById('clearSearch');
             c.classList.toggle('hidden',!q);
@@ -251,7 +260,6 @@
                 if(vd.title.toLowerCase().includes(q.toLowerCase())){ v.innerHTML+=createVideoCard(vd,pk); }
             }));
         }
-
         function clearSearch(){ document.getElementById('searchInput').value=""; handleSearch(""); }
         function toggleDarkMode(){ isDarkMode=!isDarkMode; document.documentElement.classList.toggle('dark',isDarkMode); localStorage.theme=isDarkMode?'dark':'light'; updateDarkIcon(); }
         function updateDarkIcon(){ document.getElementById('darkIcon').className=isDarkMode?'fa-solid fa-sun text-yellow-400':'fa-solid fa-moon'; }
