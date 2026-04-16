@@ -17,18 +17,19 @@
         body { font-family: 'Kanit', sans-serif; transition: background-color 0.3s; }
         
         .glass { 
-            background: rgba(255, 255, 255, 0.9); 
+            background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
         }
-        .dark .glass { background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .dark .glass { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
 
-        .video-card { transition: all 0.2s ease; }
+        .video-card { transition: all 0.2s ease; cursor: pointer; }
+        .video-card:hover { transform: translateY(-2px); }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
         select {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 0.7rem;
+            background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem;
         }
 
         .fast-spin { animation: spin 0.6s linear infinite; }
@@ -39,54 +40,56 @@
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 pb-10">
 
     <div id="loading" class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white dark:bg-slate-900">
-        <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full fast-spin"></div>
-        <p class="mt-4 text-gray-500 dark:text-gray-400 font-medium">กำลังโหลดข้อมูล</p>
+        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full fast-spin"></div>
+        <p class="mt-4 text-gray-500 dark:text-gray-400 font-semibold text-lg">กำลังโหลดข้อมูล</p>
     </div>
 
     <div id="mainUI" class="hidden opacity-0 transition-opacity duration-300">
         
-        <header class="sticky top-0 z-50 glass border-b p-2">
-            <div class="max-w-md mx-auto flex items-center gap-1.5">
-                <select id="packSelect" onchange="handlePackChange(this.value)" 
-                    class="w-[110px] h-9 pl-2 pr-6 bg-gray-100 dark:bg-slate-800 border-none rounded-lg text-xs font-bold text-blue-600 dark:text-blue-400 outline-none">
-                </select>
+        <header class="sticky top-0 z-50 glass border-b p-4 sm:p-5 shadow-md">
+            <div class="max-w-2xl mx-auto flex items-center gap-3">
+                <div class="relative w-1/3 min-w-[120px]">
+                    <select id="packSelect" onchange="handlePackChange(this.value)" 
+                        class="w-full h-12 pl-4 pr-10 bg-gray-100 dark:bg-slate-800 border-none rounded-2xl text-sm sm:text-base font-bold text-blue-600 dark:text-blue-400 outline-none shadow-sm">
+                    </select>
+                </div>
                 
                 <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     <input type="text" id="searchInput" oninput="handleSearch(this.value)" 
-                        placeholder="ค้นหา..." 
-                        class="w-full h-9 pl-7 pr-7 bg-gray-100 dark:bg-slate-800 border-none rounded-lg text-xs outline-none focus:ring-1 focus:ring-blue-500">
-                    <button id="clearSearch" onclick="clearSearch()" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hidden">
-                        <i class="fa-solid fa-circle-xmark text-xs"></i>
+                        placeholder="ค้นหาวิดีโอ..." 
+                        class="w-full h-12 pl-11 pr-10 bg-gray-100 dark:bg-slate-800 border-none rounded-2xl text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all">
+                    <button id="clearSearch" onclick="clearSearch()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hidden">
+                        <i class="fa-solid fa-circle-xmark text-lg"></i>
                     </button>
                 </div>
 
-                <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
-                    <i id="darkIcon" class="fa-solid fa-moon text-sm text-slate-600 dark:text-yellow-400"></i>
+                <button onclick="toggleDarkMode()" class="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center shadow-sm">
+                    <i id="darkIcon" class="fa-solid fa-moon text-xl text-slate-600 dark:text-yellow-400"></i>
                 </button>
             </div>
         </header>
 
-        <main class="p-3 max-w-md mx-auto">
-            <section id="packActionRow" class="mb-4 flex items-center gap-2">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <h2 id="currentPackTitle" class="text-sm font-black text-slate-800 dark:text-white truncate"></h2>
-                    <a id="playlistBtn" href="#" target="_blank" class="shrink-0 px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md text-[10px] font-bold border border-blue-100 dark:border-blue-900/50">
-                        <i class="fa-solid fa-play-circle mr-1"></i>Playlist
+        <main class="p-4 sm:p-6 max-w-2xl mx-auto">
+            <section id="packActionRow" class="mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <h2 id="currentPackTitle" class="text-xl sm:text-2xl font-black text-slate-800 dark:text-white"></h2>
+                    <a id="playlistBtn" href="#" target="_blank" class="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-xl text-xs sm:text-sm font-bold border border-blue-200 dark:border-blue-800">
+                        <i class="fa-solid fa-play-circle mr-2"></i>Playlist
                     </a>
                 </div>
                 
-                <div class="flex gap-1.5 shrink-0 ml-auto">
-                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-8 px-3 bg-blue-600 text-white rounded-lg font-bold text-[11px] flex items-center gap-1.5 shadow-md shadow-blue-200 dark:shadow-none active:scale-95 transition-all">
-                        <i class="fa-regular fa-copy"></i> คัดลอก
+                <div class="flex gap-2">
+                    <button id="copyAllBtn" onclick="copyCurrentLink()" class="h-12 px-5 bg-blue-600 text-white rounded-2xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-blue-200 dark:shadow-none active:scale-95 transition-all hover:bg-blue-700">
+                        <i class="fa-regular fa-copy"></i> คัดลอกทั้งหมด
                     </button>
-                    <button onclick="shareToLine()" class="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center shadow-md shadow-green-100 dark:shadow-none active:scale-90 transition-all">
-                        <i class="fa-solid fa-share-nodes text-xs"></i>
+                    <button onclick="shareToLine()" class="w-12 h-12 bg-green-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-green-100 dark:shadow-none active:scale-90 transition-all hover:bg-green-600">
+                        <i class="fa-solid fa-share-nodes text-xl"></i>
                     </button>
                 </div>
             </section>
 
-            <div id="videoList" class="space-y-2.5"></div>
+            <div id="videoList" class="grid grid-cols-1 gap-4"></div>
         </main>
     </div>
 
@@ -159,7 +162,7 @@
                     }
                 });
             });
-            if (!resultsFound) videoList.innerHTML = `<p class="text-center text-gray-400 py-10 text-xs">ไม่พบวิดีโอ</p>`;
+            if (!resultsFound) videoList.innerHTML = `<p class="text-center text-gray-400 py-10">ไม่พบวิดีโอที่ค้นหา</p>`;
         }
 
         function clearSearch() {
@@ -196,35 +199,34 @@
             });
         }
 
-        // --- Card Generator ---
         function createVideoCard(video, packName) {
             const videoID = extractYoutubeID(video.url);
-            const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/120x68';
+            const thumbUrl = videoID ? `https://img.youtube.com/vi/${videoID}/mqdefault.jpg` : 'https://via.placeholder.com/150x85';
             
             return `
-                <div class="video-card bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-2 gap-3">
-                    <div class="relative flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-700" onclick="window.open('${video.url}', '_blank')">
-                        <img src="${thumbUrl}" class="w-full h-full object-cover opacity-90">
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/5">
-                            <i class="fa-solid fa-play text-white/60 text-[8px]"></i>
+                <div class="video-card bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4 hover:shadow-md">
+                    <div class="relative flex-shrink-0 w-28 h-16 sm:w-32 sm:h-20 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 shadow-inner" onclick="window.open('${video.url}', '_blank')">
+                        <img src="${thumbUrl}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black/10">
+                            <i class="fa-solid fa-play text-white/70 text-xs"></i>
                         </div>
                     </div>
                     
                     <div class="flex-1 min-w-0" onclick="window.open('${video.url}', '_blank')">
-                        <h3 class="text-[13px] font-bold text-blue-900 dark:text-blue-300 leading-tight line-clamp-2 mb-0.5">${video.title}</h3>
-                        <p class="text-[10px] text-gray-400 dark:text-gray-500 truncate">${video.url}</p>
+                        <h3 class="text-[15px] sm:text-[17px] font-bold text-blue-900 dark:text-blue-300 leading-snug line-clamp-2 mb-1 uppercase tracking-tight">${video.title}</h3>
+                        <p class="text-[11px] sm:text-[12px] text-gray-400 dark:text-gray-500 truncate font-light">${video.url}</p>
                     </div>
 
-                    <div class="flex flex-col items-end gap-1.5 shrink-0 pr-1">
-                        <span class="text-[9px] text-gray-400 dark:text-gray-600 font-medium whitespace-nowrap italic">
-                            #${video.no} | ${packName}
+                    <div class="flex flex-col items-end gap-2 shrink-0 pr-1">
+                        <span class="text-[10px] sm:text-[11px] text-gray-400 dark:text-gray-500 font-bold italic tracking-tighter opacity-70">
+                            Track ${video.no} | ${packName}
                         </span>
-                        <div class="flex gap-1">
-                            <button onclick="copySingle('${video.url}', this)" class="w-7 h-7 rounded-md bg-gray-50 dark:bg-slate-700/50 text-gray-400 flex items-center justify-center transition-all">
-                                <i class="fa-regular fa-copy text-[10px]"></i>
+                        <div class="flex gap-2">
+                            <button onclick="copySingle('${video.url}', this)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-100 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center transition-all hover:bg-blue-100">
+                                <i class="fa-regular fa-copy text-sm"></i>
                             </button>
-                            <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-7 h-7 rounded-md bg-gray-50 dark:bg-slate-700/50 text-gray-400 flex items-center justify-center transition-all">
-                                <i class="fa-solid fa-share-nodes text-[10px]"></i>
+                            <button onclick="shareSingle('${video.url}', '${video.title}')" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-100 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400 flex items-center justify-center transition-all hover:bg-green-100">
+                                <i class="fa-solid fa-share-nodes text-sm"></i>
                             </button>
                         </div>
                     </div>
@@ -232,12 +234,11 @@
             `;
         }
 
-        // --- Utils ---
         function copySingle(url, btn) {
             navigator.clipboard.writeText(url).then(() => {
                 const icon = btn.querySelector('i');
                 icon.className = 'fa-solid fa-check text-green-500';
-                setTimeout(() => { icon.className = 'fa-regular fa-copy text-gray-400'; }, 1500);
+                setTimeout(() => { icon.className = 'fa-regular fa-copy text-gray-500'; }, 1500);
             });
         }
 
