@@ -24,19 +24,32 @@
         .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .dark .glass { background: rgba(15, 23, 42, 0.96); }
 
+        /* Modal Base */
         .modal-overlay { 
             position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px);
             opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100;
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-box { 
-            width: 95%; max-width: 450px; background: white; border-radius: 2.5rem;
+            width: 92%; max-width: 420px; background: white; border-radius: 2.5rem;
             padding: 1.5rem; transform: scale(0.9); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .dark .modal-box { background: #1e293b; color: white; }
         .active .modal-box { transform: scale(1); }
+
+        /* Wheel Picker - Fixed Horizontal Wobble */
+        #wheel-container { 
+            height: 200px; overflow-y: scroll; overflow-x: hidden; 
+            scroll-snap-type: y mandatory; padding: 75px 0;
+            touch-action: pan-y; /* ล็อกให้เลื่อนได้แค่แนวตั้ง */
+        }
+        .wheel-item {
+            height: 50px; width: 100%; display: flex; align-items: center; justify-content: center;
+            scroll-snap-align: center; color: #94a3b8; font-weight: 500; transition: 0.3s;
+        }
+        .wheel-item.active { color: #4f46e5; font-size: 1.4rem; font-weight: 800; transform: scale(1.05); }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -51,47 +64,45 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 pb-10">
 
-    <div id="loading" class="fixed inset-0 z-[110] flex flex-col items-center justify-center bg-white dark:bg-slate-900">
+    <div id="loading" class="fixed inset-0 z-[120] flex flex-col items-center justify-center bg-white dark:bg-slate-900">
         <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full fast-spin"></div>
         <p class="mt-4 text-slate-500 font-medium text-sm">กำลังโหลดข้อมูล</p>
     </div>
 
     <div id="picker-overlay" class="modal-overlay">
         <div class="modal-box text-center shadow-2xl relative">
-            <h3 class="font-extrabold text-xl mb-6 text-indigo-600">เลือก</h3>
-            <div id="wheel-container" class="no-scrollbar h-[200px] overflow-y-auto snap-y snap-mandatory py-[75px]"></div>
+            <h3 class="font-bold text-xl mb-6">เลือก</h3>
+            <div id="wheel-container" class="no-scrollbar"></div>
             <div class="absolute left-8 right-8 top-[148px] h-[50px] border-y-2 border-indigo-100 dark:border-indigo-900/30 pointer-events-none"></div>
-            <button onclick="togglePicker(false)" class="w-full mt-8 py-4 grad-indigo text-white rounded-2xl font-bold shadow-lg active:scale-95 transition-all">ตกลง</button>
+            <button onclick="togglePicker(false)" class="w-full mt-8 py-4 grad-indigo text-white rounded-2xl font-bold shadow-lg active:scale-95">ตกลง</button>
         </div>
     </div>
 
     <div id="copy-selector-overlay" class="modal-overlay">
         <div class="modal-box flex flex-col max-h-[85vh] shadow-2xl relative">
-            
-            <div class="flex items-center justify-between mb-4 pb-2 border-b dark:border-slate-700">
-                <h3 class="font-black text-lg">จัดการข้อมูล</h3>
+            <div class="flex items-center justify-between mb-4 border-b pb-2 dark:border-slate-700">
+                <h3 class="font-black text-lg">คัดลอกข้อมูล</h3>
                 <button onclick="toggleCopySelector(false)" class="text-slate-400 p-1"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
 
             <div class="flex items-center justify-between mb-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-2xl">
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer">
-                    <label for="selectAll" class="text-sm font-bold cursor-pointer">เลือกทั้งหมด</label>
+                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)" class="w-5 h-5 accent-indigo-600">
+                    <label for="selectAll" class="text-sm font-bold">เลือกทั้งหมด</label>
                 </div>
                 <div class="flex items-center gap-2 border-l pl-3 dark:border-slate-700">
                     <label class="text-[11px] font-bold text-slate-400">เอาเลข No</label>
-                    <input type="checkbox" id="includeNo" checked class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                    <input type="checkbox" id="includeNo" checked class="w-5 h-5 accent-indigo-600">
                 </div>
             </div>
 
-            <div id="copy-options-list" class="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-1">
-                </div>
+            <div id="copy-options-list" class="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-1"></div>
 
             <div class="grid grid-cols-2 gap-3 mt-6">
-                <button onclick="executeCopySelected()" id="copyExecBtn" class="py-4 grad-indigo text-white rounded-2xl font-bold active:scale-95 transition-all flex items-center justify-center gap-2">
+                <button onclick="executeCopySelected()" id="copyExecBtn" class="py-4 grad-indigo text-white rounded-2xl font-bold active:scale-95 flex items-center justify-center gap-2">
                     <i class="fa-regular fa-copy"></i> <span>คัดลอกรายการ</span>
                 </button>
-                <button onclick="executeShareSelected()" class="py-4 grad-emerald text-white rounded-2xl font-bold active:scale-95 transition-all flex items-center justify-center gap-2">
+                <button onclick="executeShareSelected()" class="py-4 grad-emerald text-white rounded-2xl font-bold active:scale-95 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-share-nodes"></i> <span>แชร์</span>
                 </button>
             </div>
@@ -101,28 +112,27 @@
     <div id="mainUI" class="hidden opacity-0 transition-opacity duration-300">
         <header class="sticky top-0 z-50 glass border-b p-3 shadow-sm">
             <div class="max-w-2xl mx-auto flex items-center h-12 gap-3">
-                <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 grad-indigo text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-lg">
+                <div onclick="togglePicker(true)" class="flex-1 h-11 px-4 grad-indigo text-white rounded-2xl flex items-center justify-center cursor-pointer shadow-lg overflow-hidden">
                     <span id="selected-pack-name" class="font-extrabold text-lg truncate tracking-wide">เลือก</span>
                     <i class="fa-solid fa-chevron-down ml-2 text-xs opacity-70"></i>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></button>
-                    <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"><i id="darkIcon" class="fa-solid fa-moon"></i></button>
+                    <button onclick="toggleSearch(true)" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shadow-sm"><i class="fa-solid fa-magnifying-glass text-sm"></i></button>
+                    <button onclick="toggleDarkMode()" class="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center shadow-sm"><i id="darkIcon" class="fa-solid fa-moon"></i></button>
                 </div>
             </div>
         </header>
 
-        <main class="p-4 max-w-2xl mx-auto">
+        <main class="p-4 sm:p-6 max-w-2xl mx-auto">
             <section class="mb-8 flex items-center justify-between">
-                <a id="playlistBtn" href="#" target="_blank" class="h-11 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center text-[13px] font-bold border border-blue-100 shadow-sm active:scale-95 transition-all">
+                <a id="playlistBtn" href="#" target="_blank" class="h-10 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center text-[13px] font-bold border border-blue-100 shadow-sm">
                     <i class="fa-solid fa-play-circle mr-2"></i> Playlist
                 </a>
-                
                 <div class="flex gap-2">
-                    <button onclick="prepareCopySelector()" class="h-11 px-5 bg-indigo-600 text-white rounded-xl font-bold text-[13px] flex items-center gap-2 shadow-lg active:scale-95 transition-all">
+                    <button onclick="prepareCopySelector()" class="h-10 px-5 bg-indigo-600 text-white rounded-xl font-bold text-[13px] flex items-center gap-2 shadow-lg active:scale-95">
                         <i class="fa-regular fa-copy"></i> คัดลอกข้อมูล
                     </button>
-                    <button onclick="shareToLine()" class="w-11 h-11 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                    <button onclick="shareToLine()" class="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90">
                         <i class="fa-solid fa-share-nodes text-lg"></i>
                     </button>
                 </div>
@@ -181,160 +191,118 @@
         function renderWheelPicker() {
             const container = document.getElementById('wheel-container');
             container.innerHTML = "";
-            Object.keys(MASTER_DATA).forEach(name => {
+            const packNames = Object.keys(MASTER_DATA);
+            packNames.forEach(name => {
                 const item = document.createElement('div');
                 item.className = "wheel-item";
                 item.innerText = name;
-                item.onclick = () => { currentSelectedPack = name; scrollToItem(item); };
+                item.onclick = () => { container.scrollTo({ top: packNames.indexOf(name) * 50, behavior: 'smooth' }); };
                 container.appendChild(item);
             });
             container.onscroll = () => {
+                const index = Math.round(container.scrollTop / 50);
                 const items = container.querySelectorAll('.wheel-item');
-                let closest = items[0];
-                let minOffset = Math.abs(container.scrollTop + 75 - items[0].offsetTop);
-                items.forEach(item => {
-                    const offset = Math.abs(container.scrollTop + 75 - item.offsetTop);
-                    if (offset < minOffset) { minOffset = offset; closest = item; }
+                items.forEach((item, i) => {
+                    if (i === index) { item.classList.add('active'); currentSelectedPack = item.innerText; }
+                    else { item.classList.remove('active'); }
                 });
-                currentSelectedPack = closest.innerText;
-                updateWheelVisuals();
+                document.getElementById('selected-pack-name').innerText = currentSelectedPack;
             };
         }
-        function scrollToItem(el) { document.getElementById('wheel-container').scrollTop = el.offsetTop - 75; }
-        function updateWheelVisuals() {
-            const items = document.querySelectorAll('.wheel-item');
-            items.forEach(item => item.classList.toggle('active', item.innerText === currentSelectedPack));
-            if(currentSelectedPack) document.getElementById('selected-pack-name').innerText = currentSelectedPack;
-        }
 
-        // --- Pro Copy Selector Logic ---
+        // --- Copy Selector ---
         function toggleCopySelector(o) { document.getElementById('copy-selector-overlay').classList.toggle('active', o); }
-        
         function prepareCopySelector() {
             const packInfo = MASTER_DATA[currentSelectedPack];
             const list = document.getElementById('copy-options-list');
             list.innerHTML = "";
-            document.getElementById('selectAll').checked = false;
-
-            if (packInfo.playlistUrl) {
-                list.innerHTML += createCopyItem('playlist', `Playlist (${currentSelectedPack})`, packInfo.playlistUrl);
-            }
-            packInfo.videos.forEach(v => {
-                list.innerHTML += createCopyItem('video', `${v.no} : ${v.title}`, v.url, v.title, v.no);
-            });
+            if (packInfo.playlistUrl) list.innerHTML += createCopyItem('playlist', `Playlist (${currentSelectedPack})`, packInfo.playlistUrl);
+            packInfo.videos.forEach(v => list.innerHTML += createCopyItem('video', v.title, v.url, v.title, v.no));
             toggleCopySelector(true);
         }
-
         function createCopyItem(type, label, url, title="", no="") {
-            return `<div class="flex items-center gap-3 p-3 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl active:bg-slate-50 transition-all">
-                <input type="checkbox" class="copy-checkbox w-6 h-6 accent-indigo-600 cursor-pointer" data-type="${type}" data-url="${url}" data-title="${title}" data-no="${no}">
-                <p class="text-[13px] font-bold leading-tight line-clamp-2 flex-1 cursor-pointer" onclick="this.parentElement.querySelector('input').click()">${label}</p>
+            return `<div class="flex items-start gap-3 p-3 bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 rounded-2xl">
+                <input type="checkbox" class="copy-checkbox w-6 h-6 accent-indigo-600 mt-1" data-type="${type}" data-url="${url}" data-title="${title}" data-no="${no}">
+                <p class="text-[14px] font-bold leading-snug line-clamp-2 flex-1" onclick="this.parentElement.querySelector('input').click()">${label}</p>
             </div>`;
         }
-
         function toggleSelectAll(checked) { document.querySelectorAll('.copy-checkbox').forEach(cb => cb.checked = checked); }
         
-        // ฟังก์ชันสร้าง Text ตาม Option "เอาเลข No"
-        function buildSelectedText() {
+        function buildFormattedText() {
             const checkboxes = document.querySelectorAll('.copy-checkbox:checked');
             const includeNo = document.getElementById('includeNo').checked;
             if (!checkboxes.length) return null;
-
             let text = `${currentSelectedPack}\n--------------\n\n`;
             checkboxes.forEach(cb => {
-                const type = cb.dataset.type;
-                const url = cb.dataset.url;
-                if (type === 'playlist') {
-                    text += `Playlist (${currentSelectedPack})\n${url}\n\n`;
-                } else {
-                    const title = cb.dataset.title;
-                    const no = cb.dataset.no;
-                    // ถ้าติ๊ก No ให้ใส่เลข ถ้าไม่ติ๊กให้เอาออก
-                    const prefix = includeNo ? `${no} (${currentSelectedPack}) : ` : `(${currentSelectedPack}) : `;
-                    text += `${prefix}${title}\n${url}\n\n`;
+                if (cb.dataset.type === 'playlist') text += `Playlist (${currentSelectedPack})\n${cb.dataset.url}\n\n`;
+                else {
+                    const prefix = includeNo ? `${cb.dataset.no} (${currentSelectedPack}) : ` : `(${currentSelectedPack}) : `;
+                    text += `${prefix}${cb.dataset.title}\n${cb.dataset.url}\n\n`;
                 }
             });
             return text.trim();
         }
 
         function executeCopySelected() {
-            const finalContext = buildSelectedText();
-            if (!finalContext) return alert("กรุณาเลือกอย่างน้อย 1 รายการ");
-
+            const content = buildFormattedText();
+            if (!content) return;
             const btn = document.getElementById('copyExecBtn');
-            const span = btn.querySelector('span');
-
-            navigator.clipboard.writeText(finalContext).then(() => {
-                const originalText = span.innerText;
-                span.innerText = "คัดลอกแล้ว!";
-                btn.classList.replace('grad-indigo', 'grad-emerald');
-                
-                setTimeout(() => {
-                    span.innerText = originalText;
-                    btn.classList.replace('grad-emerald', 'grad-indigo');
-                    toggleCopySelector(false); // ปิด popup หลังคัดลอก
-                }, 1200);
+            navigator.clipboard.writeText(content).then(() => {
+                const span = btn.querySelector('span');
+                span.innerText = "คัดลอกแล้ว!"; btn.classList.replace('grad-indigo', 'grad-emerald');
+                setTimeout(() => { span.innerText = "คัดลอกรายการ"; btn.classList.replace('grad-emerald', 'grad-indigo'); toggleCopySelector(false); }, 1000);
             });
         }
-
+        
         async function executeShareSelected() {
-            const finalContext = buildSelectedText();
-            if (!finalContext) return alert("กรุณาเลือกอย่างน้อย 1 รายการ");
-            try { await liff.shareTargetPicker([{"type":"text","text":finalContext}]); } catch(e){}
+            const content = buildFormattedText(); if (!content) return;
+            try { await liff.shareTargetPicker([{"type":"text","text":content}]); } catch(e){}
+        }
+
+        // --- Card Generator ---
+        function createVideoCard(v, p) {
+            const id = extractYoutubeID(v.url);
+            return `<div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4">
+                <div class="w-24 h-16 rounded-2xl overflow-hidden bg-slate-100 shrink-0" onclick="window.open('${v.url}','_blank')">
+                    <img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1 min-w-0" onclick="window.open('${v.url}','_blank')">
+                    <h3 class="text-[14px] font-bold text-indigo-900 dark:text-blue-300 line-clamp-2 mb-1">${v.title}</h3>
+                    <p class="text-[10px] text-slate-400 truncate">${v.url}</p>
+                </div>
+                <div class="flex flex-col items-end gap-1.5 shrink-0 pr-1">
+                    <span class="text-[9px] text-slate-400 font-bold italic">#${v.no} | ${p}</span>
+                    <div class="flex gap-1.5">
+                        <button onclick="copySingle('${v.url}',this)" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center transition-all hover:bg-indigo-50"><i class="fa-regular fa-copy text-xs"></i></button>
+                        <button onclick="shareSingle('${v.url}','${v.title}')" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center transition-all hover:bg-emerald-50"><i class="fa-solid fa-share-nodes text-xs"></i></button>
+                    </div>
+                </div>
+            </div>`;
         }
 
         // --- Core ---
         function showPack(p) {
-            currentSelectedPack = p;
+            currentSelectedPack = p; document.getElementById('selected-pack-name').innerText = p;
             const packInfo = MASTER_DATA[p];
             document.getElementById('playlistBtn').href = packInfo.playlistUrl || "#";
-            const vList = document.getElementById('videoList');
-            vList.innerHTML = "";
-            packInfo.videos.forEach(v => {
-                const vidID = extractYoutubeID(v.url);
-                vList.innerHTML += `<div class="video-card bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 flex items-center p-3 gap-4">
-                    <div class="w-24 h-16 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0" onclick="window.open('${v.url}','_blank')">
-                        <img src="https://img.youtube.com/vi/${vidID}/mqdefault.jpg" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex-1 min-w-0" onclick="window.open('${v.url}','_blank')">
-                        <h3 class="text-[14px] font-bold text-indigo-900 dark:text-blue-300 line-clamp-2 mb-1 tracking-tight">${v.title}</h3>
-                        <p class="text-[10px] text-slate-400 italic">#${v.no} | ${p}</p>
-                    </div>
-                    <div class="flex gap-1.5 pr-1">
-                        <button onclick="copySingle('${v.url}',this)" class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-400 flex items-center justify-center"><i class="fa-regular fa-copy text-xs"></i></button>
-                    </div>
-                </div>`;
-            });
-            updateWheelVisuals();
+            const vList = document.getElementById('videoList'); vList.innerHTML = "";
+            packInfo.videos.forEach(v => vList.innerHTML += createVideoCard(v, p));
         }
 
-        // --- Utils ---
         function toggleSearch(o) { document.getElementById('header-search').style.transform = o ? 'translateY(0)' : 'translateY(-100%)'; if(o) setTimeout(()=>document.getElementById('searchInput').focus(),300); }
         function handleSearch(q) {
             const v=document.getElementById('videoList'), c=document.getElementById('clearSearch');
             c.classList.toggle('hidden', !q); v.innerHTML = "";
             Object.keys(MASTER_DATA).forEach(pk => MASTER_DATA[pk].videos.forEach(vd => {
-                if(vd.title.toLowerCase().includes(q.toLowerCase())) v.innerHTML += `<div class="p-4 bg-white dark:bg-slate-800 rounded-2xl border mb-2 shadow-sm" onclick="window.open('${vd.url}','_blank')"><h4 class="font-bold text-sm text-indigo-900 dark:text-blue-300">${vd.title}</h4><p class="text-xs text-slate-400">#${vd.no} | ${pk}</p></div>`;
+                if(vd.title.toLowerCase().includes(q.toLowerCase())) v.innerHTML += createVideoCard(vd, pk);
             }));
         }
         function clearSearch() { document.getElementById('searchInput').value = ""; handleSearch(""); }
-        function toggleDarkMode() { isDarkMode = !isDarkMode; document.documentElement.classList.toggle('dark', isDarkMode); localStorage.theme = isDarkMode ? 'dark' : 'light'; updateDarkIcon(); }
+        function toggleDarkMode() { isDarkMode = !isDarkMode; document.documentElement.classList.toggle('dark', isDarkMode); updateDarkIcon(); }
         function updateDarkIcon() { document.getElementById('darkIcon').className = isDarkMode ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon'; }
         function copySingle(u,b) { navigator.clipboard.writeText(u).then(()=> { b.innerHTML='<i class="fa-solid fa-check text-emerald-500"></i>'; setTimeout(()=>b.innerHTML='<i class="fa-regular fa-copy text-xs"></i>',1500); }); }
-        
-        async function shareToLine() {
-            const textToShare = generatePackTemplate(currentSelectedPack);
-            try { await liff.shareTargetPicker([{"type":"text","text":textToShare}]); } catch(e){} 
-        }
-
-        function generatePackTemplate(p){
-            const info = MASTER_DATA[p];
-            let t = `${p}\n--------------\n\n`;
-            if (info.playlistUrl) t += `Playlist (${p})\n${info.playlistUrl}\n\n`;
-            info.videos.forEach(v => { t += `${v.no} (${p}) : ${v.title}\n${v.url}\n\n`; });
-            return t.trim();
-        }
-
+        async function shareSingle(u, t) { try { await liff.shareTargetPicker([{"type":"text","text":`${t}\n${u}`}]); } catch(e){} }
+        function shareToLine() { executeShareSelected(); }
         function extractYoutubeID(u){ const m=u.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/); return (m&&m[2].length===11)?m[2]:null; }
     </script>
 </body>
