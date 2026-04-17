@@ -7,15 +7,14 @@
         async function route() {
             await liff.init({ liffId: LIFF_ID });
             
-            // ดึงค่าจากลิงก์ว่าอยากไปหน้าไหน เช่น ?p=link15
             const urlParams = new URLSearchParams(window.location.search);
             const page = urlParams.get('p'); 
 
             if (page === 'link15') {
                 window.location.replace("link15.html");
             } else {
-                // ถ้าไม่มีค่าอะไรส่งมา ให้ไปหน้าลงทะเบียนเป็นค่าเริ่มต้น
-                window.location.replace("register.html");
+                // ⚠️ ถ้าไม่มีค่าอะไรส่งมา ให้ไปหน้าจัดการบัญชี/ลงทะเบียน
+                window.location.replace("account.html");
             }
         }
         route();

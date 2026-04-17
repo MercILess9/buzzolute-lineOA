@@ -8,24 +8,27 @@ async function checkAuth() {
 
     const profile = await liff.getProfile();
     
-    // 2. เรียกไปที่ GAS (ต้องใส่ &type=pack เข้าไปด้วย!)
-    const response = await fetch(`${GAS_URL}?userId=${profile.userId}&type=pack`);
-    const result = await response.json();
+    // 2. เรียกไปที่ GAS (ใส่ &type=pack เพื่อเช็คสิทธิ์ดูวิดีโอ)
+    try {
+        const response = await fetch(`${GAS_URL}?userId=${profile.userId}&type=pack`);
+        const result = await response.json();
 
-    // 3. เช็กสถานะจาก GAS (ใช้ status ตามที่เราแก้ใน Main.gs)
-    if (result.status === "error") {
-        if (result.message === "NOT_MEMBER") {
-            // ถ้าไม่ใช่สมาชิก ให้เด้งไปหน้าลงทะเบียน
-            if (!window.location.pathname.includes('register.html')) {
-                window.location.href = `register.html?target=${encodeURIComponent(window.location.href)}`;
+        // 3. เช็คสถานะจาก GAS
+        if (result.status === "error") {
+            if (result.message === "NOT_MEMBER") {
+                // ⚠️ แก้จาก register.html เป็น account.html
+                if (!window.location.pathname.includes('account.html')) {
+                    window.location.href = `account.html?target=${encodeURIComponent(window.location.href)}`;
+                }
+            } else {
+                alert("Error: " + result.message);
             }
-        } else {
-            alert("Error: " + result.message);
+            return null;
         }
+
+        return result; // ส่ง status: success และ data (วิดีโอ) กลับไป
+    } catch (e) {
+        console.error("Auth Error:", e);
         return null;
     }
-
-    // 4. ส่งค่ากลับให้ link15.html (ส่งไปก้อนเดียวเพื่อให้หน้าเว็บอ่าน status และ data ได้เลย)
-    // หน้าเว็บจะใช้: auth.status และ auth.data
-    return result; 
 }
