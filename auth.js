@@ -1,4 +1,4 @@
-async function checkAuth(type) {
+async function checkAuth(type = "link15") {
   await liff.init({ liffId: LIFF_ID });
 
   if (!liff.isLoggedIn()) {
@@ -15,10 +15,10 @@ async function checkAuth(type) {
 
     const result = await res.json();
 
-    if (!result || result.status !== "success") {
+    if (result.status !== "success") {
 
-      if (result?.message === "NOT_MEMBER") {
-        window.location.href = `${GAS_URL}?p=account`;
+      if (result.message === "NOT_MEMBER") {
+        window.location.href = "account.html";
       }
 
       return null;
@@ -27,7 +27,7 @@ async function checkAuth(type) {
     return result;
 
   } catch (e) {
-    console.error("Auth Error:", e);
+    console.error(e);
     return null;
   }
 }
