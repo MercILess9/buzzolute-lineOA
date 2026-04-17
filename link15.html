@@ -166,22 +166,34 @@
         };
 
         async function init() {
-            const auth = await checkAuth("link15");
+    const auth = await checkAuth("link15");
 
-            if (!auth) return;
+    if (!auth) return;
 
-            MASTER_DATA = auth.data;
+    MASTER_DATA = auth.data;
 
-            renderWheelPicker();
+    const packs = Object.keys(MASTER_DATA);
 
-            const packs = Object.keys(MASTER_DATA);
-
-            if (packs.length > 0) showPack(packs[0]);
-
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("mainUI").classList.remove("hidden");
-            }
-
+    if (packs.length > 0) {
+        renderWheelPicker();
+        showPack(packs[0]);
+        
+        // --- ส่วนที่แก้ไขเพื่อให้หน้าจอไม่ขาว ---
+        document.getElementById("loading").style.display = "none";
+        const mainUI = document.getElementById("mainUI");
+        
+        mainUI.classList.remove("hidden"); // เลิกซ่อน
+        
+        // ใช้ setTimeout นิดนึงเพื่อให้ Transition ของ Tailwind ทำงาน
+        setTimeout(() => {
+            mainUI.classList.replace("opacity-0", "opacity-100"); // เลิกล่องหน
+        }, 50);
+        // ----------------------------------
+    } else {
+        // กรณีไม่มีข้อมูลเลย
+        document.getElementById("loading").innerHTML = "<p class='text-slate-400'>ไม่พบข้อมูลวิดีโอ</p>";
+    }
+}
         // --- Wheel Picker ---
         function togglePicker(isOpen) {
             const overlay = document.getElementById('picker-overlay');
