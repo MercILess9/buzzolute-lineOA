@@ -166,28 +166,22 @@
         };
 
         async function init() {
-    const auth = await checkAuth("link15");
-    const data = auth?.data;
-    const packs = data ? Object.keys(data) : [];
+            const auth = await checkAuth("link15");
+            const data = auth?.data;
+            const packs = data ? Object.keys(data) : [];
 
-    // 1. Guard Clause: ถ้าไม่มีข้อมูลจบงานทันที
-    if (!packs.length) {
-        return document.getElementById("loading").innerHTML = "ไม่พบข้อมูลวิดีโอ";
-    }
+            MASTER_DATA = data;
+            renderWheelPicker();
+            showPack(packs[0]);
 
-    // 2. Setup Data & UI
-    MASTER_DATA = data;
-    renderWheelPicker();
-    showPack(packs[0]);
+            const loading = document.getElementById("loading");
+            const ui = document.getElementById("mainUI");
 
-    // 3. UI Transition (Lean Version)
-    const loading = document.getElementById("loading");
-    const ui = document.getElementById("mainUI");
+            loading.style.display = "none";
+            ui.classList.remove("hidden");
+            setTimeout(() => ui.classList.replace("opacity-0", "opacity-100"), 50);
+        }
 
-    loading.style.display = "none";
-    ui.classList.remove("hidden");
-    setTimeout(() => ui.classList.replace("opacity-0", "opacity-100"), 50);
-}
         // --- Wheel Picker ---
         function togglePicker(isOpen) {
             const overlay = document.getElementById('picker-overlay');
