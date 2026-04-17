@@ -89,7 +89,7 @@
                         <div class="pin-container">
                             <label class="form-label pin-label"><i class="fa-solid fa-crown text-warning"></i>PIN</label>
                             <select id="pin" class="form-select pin-select">
-                                <option value="General">General</option>
+                                <option value="Member">Member</option>
                                 <option value="Silver">Silver</option>
                                 <option value="Gold">Gold</option>
                                 <option value="Platinum">Platinum</option>
@@ -108,8 +108,8 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         const provinces = ["กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี"];
-        const pinRank = ["General", "Silver", "Gold", "Platinum", "Emerald", "Diamond"];
-        let isUpdateMode = false; let oldPin = "General";
+        const pinRank = ["Member", "Silver", "Gold", "Platinum", "Emerald", "Diamond"];
+        let isUpdateMode = false; let oldPin = "Member";
 
         document.getElementById('phone').addEventListener('input', function (e) {
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
@@ -143,7 +143,7 @@
                 const response = await fetch(`${GAS_URL}?userId=${uID}&type=account`);
                 const res = await response.json();
                 if (res.status === "REGISTERED") {
-                    isUpdateMode = true; oldPin = res.data.pin || "General";
+                    isUpdateMode = true; oldPin = res.data.pin || "Member";
                     // 1. ซ่อนหัวข้อในโหมด Update
                     document.getElementById('headerGroup').style.display = 'none';
                     document.getElementById('submitBtn').innerText = "Update";
