@@ -6,20 +6,18 @@
     <script>
         async function route() {
             await liff.init({ liffId: LIFF_ID });
-            
             const urlParams = new URLSearchParams(window.location.search);
             const page = urlParams.get('p'); 
 
             if (page === 'link15') {
                 window.location.replace("link15.html");
             } else {
-                // ⚠️ ถ้าไม่มีค่าอะไรส่งมา ให้ไปหน้าจัดการบัญชี/ลงทะเบียน
+                // ถ้าไม่มีค่า หรือค่าไม่ตรง ให้ไปหน้าจัดการบัญชี (account.html)
                 window.location.replace("account.html");
             }
         }
         route();
     </script>
 </head>
-<body style="background:#fff;">
-    </body>
+<body style="background:#fff;"></body>
 </html>
