@@ -19,10 +19,11 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
         .reg-card { max-width: 500px; margin: 30px auto; background: var(--glass); padding: 45px 35px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); display: none; border: 1px solid rgba(255,255,255,0.5); }
-        .profile-img { width: 90px; height: 90px; border-radius: 50%; margin-bottom: 15px; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        
         .header-title { color: var(--navy); font-weight: 600; font-size: 1.7rem; margin-bottom: 2px; }
         .sub-title { color: #888; font-size: 0.9rem; margin-bottom: 25px; font-weight: 300; }
-        .user-id-text { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 35px; }
+        .user-id-text { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 30px; }
 
         .form-label { font-weight: 500; color: #555; font-size: 0.85rem; margin-bottom: 8px; }
         .form-label i { color: #555; width: 20px; text-align: center; margin-right: 4px; opacity: 0.7; }
@@ -32,15 +33,27 @@
         .invalid-field { border-color: var(--error-red) !important; background-color: #fff8f8 !important; }
         .readonly-input { background-color: #f8fafc !important; color: #94a3b8; cursor: not-allowed; }
         
+        /* 👑 PIN Selection Style - ทำให้ดูชัดเจนว่าเลือกได้ */
+        .pin-container {
+            margin-top: 15px;
+            padding: 20px;
+            background: #f8fbff;
+            border: 1px solid #e1e9f5;
+            border-radius: 20px;
+        }
+        .pin-label { color: var(--navy) !important; font-weight: 600 !important; }
+        .pin-select { border: 2px solid #d0ddec !important; color: var(--navy) !important; font-weight: 500 !important; }
+
         .btn-submit { 
             background: linear-gradient(135deg, #1a2a6c 0%, #2a3d8f 50%, #1a2a6c 100%);
             background-size: 200% auto; border: none; border-radius: 20px; 
-            padding: 18px; font-weight: 600; color: white; width: 100%; margin-top: 30px;
+            padding: 18px; font-weight: 600; color: white; width: 100%; margin-top: 25px;
             box-shadow: 0 10px 25px rgba(26, 42, 108, 0.25); transition: 0.5s; letter-spacing: 1.5px; text-transform: uppercase;
         }
         .btn-submit:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(26, 42, 108, 0.4); }
 
-        .swal-luxury { width: 300px !important; border-radius: 25px !important; backdrop-filter: blur(5px); background: rgba(255,255,255,0.95) !important; }
+        .swal-luxury { width: 320px !important; border-radius: 25px !important; backdrop-filter: blur(5px); background: rgba(255,255,255,0.95) !important; }
+        .swal2-title { font-size: 1.15rem !important; color: var(--navy) !important; font-weight: 600 !important; }
     </style>
 </head>
 <body>
@@ -53,8 +66,11 @@
 
     <div class="container py-4">
         <div id="form-section" class="reg-card text-center">
-            <h3 id="mainTitle" class="header-title">Registration</h3>
-            <p class="sub-title">ลงทะเบียนสมาชิก Buzzolute LINE</p>
+            <div id="headerGroup">
+                <h3 id="mainTitle" class="header-title">Registration</h3>
+                <p id="subTitle" class="sub-title">ลงทะเบียนสมาชิก Buzzolute LINE</p>
+            </div>
+            
             <img id="pictureUrlDisplay" src="" class="profile-img">
             <div id="displayNameDisplay" style="font-weight: 600; color: var(--navy); font-size: 1.15rem;">-</div>
             <div id="userIdDisplay" class="user-id-text">-</div>
@@ -65,10 +81,23 @@
                     <div class="col-6"><label class="form-label"><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์</label><input type="tel" id="phone" class="form-control validate" maxlength="12"></div>
                     <div class="col-12"><label class="form-label"><i class="fa-regular fa-address-card"></i> ชื่อ-นามสกุล</label><input type="text" id="fullName" class="form-control validate"></div>
                     <div class="col-12"><label class="form-label"><i class="fa-regular fa-envelope"></i> Email</label><input type="email" id="email" class="form-control validate"></div>
-                    <div id="pinGroup" class="col-12" style="display:none;"><label class="form-label text-primary"><i class="fa-solid fa-crown"></i> PIN</label><select id="pin" class="form-select"><option value="General">General</option><option value="Silver">Silver</option><option value="Gold">Gold</option><option value="Platinum">Platinum</option><option value="Emerald">Emerald</option><option value="Diamond">Diamond</option></select></div>
                     <div class="col-12"><label class="form-label"><i class="fa-solid fa-map-location-dot"></i> จังหวัด</label><select id="province" class="form-select validate"><option value="" selected disabled>เลือกจังหวัด</option></select></div>
                     <div class="col-12"><label class="form-label"><i class="fa-solid fa-globe"></i> ประเทศ</label><input type="text" id="country" class="form-control readonly-input" value="ประเทศไทย" readonly></div>
                     <div class="col-12"><label class="form-label"><i class="fa-solid fa-star"></i> Platinum ในสายงาน</label><input type="text" id="platinum" class="form-control validate"></div>
+
+                    <div id="pinGroup" class="col-12" style="display:none;">
+                        <div class="pin-container">
+                            <label class="form-label pin-label"><i class="fa-solid fa-crown text-warning"></i> ระดับสมาชิก (PIN)</label>
+                            <select id="pin" class="form-select pin-select">
+                                <option value="General">General</option>
+                                <option value="Silver">Silver</option>
+                                <option value="Gold">Gold</option>
+                                <option value="Platinum">Platinum</option>
+                                <option value="Emerald">Emerald</option>
+                                <option value="Diamond">Diamond</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <button onclick="sendData()" id="submitBtn" class="btn btn-submit">ลงทะเบียน</button>
             </div>
@@ -115,8 +144,11 @@
                 const res = await response.json();
                 if (res.status === "REGISTERED") {
                     isUpdateMode = true; oldPin = res.data.pin || "General";
+                    // 1. ซ่อนหัวข้อในโหมด Update
+                    document.getElementById('headerGroup').style.display = 'none';
                     document.getElementById('submitBtn').innerText = "Update";
                     document.getElementById('pinGroup').style.display = "block";
+                    
                     document.getElementById('nickname').value = res.data.nickname || "";
                     document.getElementById('fullName').value = res.data.fullName || "";
                     let p = res.data.phone || "";
@@ -147,18 +179,24 @@
                 platinum: document.getElementById('platinum').value.trim(), pin: document.getElementById('pin').value, country: "ประเทศไทย"
             };
 
+            // 3. ปรับ Popup ใส่รหัสจาก Upline
             if (isUpdateMode && pinRank.indexOf(data.pin) > pinRank.indexOf(oldPin)) {
-                const { value: code } = await Swal.fire({ title: 'ยืนยัน PIN', input: 'text', showCancelButton: true, customClass: { popup: 'swal-luxury' } });
+                const { value: code } = await Swal.fire({ 
+                    title: 'ยืนยันการอัปเกรด PIN', 
+                    text: 'กรุณาใส่รหัสจาก Upline ของคุณ',
+                    input: 'text', 
+                    showCancelButton: true, 
+                    confirmButtonColor: '#1a2a6c',
+                    customClass: { popup: 'swal-luxury' } 
+                });
                 if (!code) return; data.verifyCode = code;
             }
 
-            // --- 🚀 Optimistic Update: แสดงผลทันทีที่กด ---
             Swal.fire({ 
-                title: 'บันทึกสำเร็จ', icon: 'success', showConfirmButton: false, timer: 2000, 
+                title: 'บันทึกสำเร็จ', icon: 'success', showConfirmButton: false, timer: 1500, 
                 customClass: { popup: 'swal-luxury' } 
             }).then(() => liff.closeWindow());
 
-            // บันทึกไปหลังบ้านเงียบๆ (Background Process)
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }).catch(e => console.error(e));
         }
         initLIFF();
