@@ -23,6 +23,7 @@
             font-family: 'Kanit', sans-serif; 
         }
         
+        /* Premium Loader พร้อมข้อความที่หายไป */
         #loader {
             position: fixed; inset: 0; background: #fff;
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
@@ -30,7 +31,7 @@
         .spinner {
             width: 40px; height: 40px; border: 3px solid #f3f3f3;
             border-top: 3px solid var(--navy); border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.8s linear infinite; margin-bottom: 20px;
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
@@ -50,8 +51,9 @@
         .sub-title { color: #888; font-size: 0.9rem; margin-bottom: 25px; font-weight: 300; }
         .user-id-text { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 35px; }
 
+        /* Icon แบบไม่เอาสี (Monochrome) */
         .form-label { font-weight: 500; color: #555; font-size: 0.85rem; margin-bottom: 8px; }
-        .form-label i { color: var(--active-blue); width: 20px; text-align: center; margin-right: 4px; opacity: 0.8; }
+        .form-label i { color: #555; width: 20px; text-align: center; margin-right: 4px; opacity: 0.7; }
         
         .form-control, .form-select { 
             border-radius: 14px; padding: 13px 18px; border: 1px solid #eef0f3; 
@@ -73,18 +75,21 @@
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(26, 42, 108, 0.3); }
         .btn-submit:active { transform: scale(0.97); }
 
-        /* Elegant Floating Alert */
+        /* Floating Alert */
         .swal2-popup.swal-luxury {
             width: 300px !important; border-radius: 25px !important; padding: 2rem 1.5rem !important;
             box-shadow: 0 15px 50px rgba(0,0,0,0.15) !important;
         }
         .swal2-title { font-size: 1.2rem !important; color: var(--navy) !important; font-weight: 600 !important; }
-        .swal2-loading { margin-top: 10px !important; }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="spinner"></div></div>
+    <div id="loader">
+        <div class="spinner"></div>
+        <h5 style="color:var(--navy); margin-bottom: 8px; font-weight: 500; letter-spacing: 1px;">Buzzolute Authentication</h5>
+        <p style="color:#aaa; font-weight: 300; font-size: 0.9rem;">Securing your connection...</p>
+    </div>
 
     <div class="container py-4">
         <div id="form-section" class="reg-card text-center">
@@ -116,7 +121,7 @@
 
                     <div id="pinGroup" class="col-12" style="display:none;">
                         <label class="form-label text-primary"><i class="fa-solid fa-crown"></i> ระดับสมาชิก (PIN)</label>
-                        <select id="pin" class="form-select" style="border-color: rgba(0, 123, 255, 0.3);">
+                        <select id="pin" class="form-select">
                             <option value="General">General</option>
                             <option value="Silver">Silver</option>
                             <option value="Gold">Gold</option>
@@ -156,7 +161,7 @@
         let isUpdateMode = false;
         let oldPin = "General";
 
-        // Auto-hyphen phone number
+        // Phone Auto-hyphen
         document.getElementById('phone').addEventListener('input', function (e) {
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
             e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
@@ -246,7 +251,7 @@
                 title: 'กำลังบันทึก...', 
                 allowOutsideClick: false, 
                 showConfirmButton: false,
-                width: '280px',
+                width: '300px',
                 customClass: { popup: 'swal-luxury' },
                 backdrop: `rgba(0,0,0,0.1)`,
                 didOpen: () => Swal.showLoading() 
