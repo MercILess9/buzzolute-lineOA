@@ -87,7 +87,7 @@
 
                     <div id="pinGroup" class="col-12" style="display:none;">
                         <div class="pin-container">
-                            <label class="form-label pin-label"><i class="fa-solid fa-crown text-warning"></i> ระดับสมาชิก (PIN)</label>
+                            <label class="form-label pin-label"><i class="fa-solid fa-crown text-warning"></i>PIN</label>
                             <select id="pin" class="form-select pin-select">
                                 <option value="General">General</option>
                                 <option value="Silver">Silver</option>
@@ -182,8 +182,8 @@
             // 3. ปรับ Popup ใส่รหัสจาก Upline
             if (isUpdateMode && pinRank.indexOf(data.pin) > pinRank.indexOf(oldPin)) {
                 const { value: code } = await Swal.fire({ 
-                    title: 'ยืนยันการอัปเกรด PIN', 
-                    text: 'กรุณาใส่รหัสจาก Upline ของคุณ',
+                    title: 'เปลี่ยน PIN', 
+                    text: 'กรุณาใส่รหัสจาก Platinum ของคุณ',
                     input: 'text', 
                     showCancelButton: true, 
                     confirmButtonColor: '#1a2a6c',
