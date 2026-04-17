@@ -9,7 +9,7 @@ async function checkAuth() {
     
     try {
         // ส่งไปเช็กที่ GAS ว่าเป็นสมาชิกไหม และขอข้อมูลวิดีโอ
-        const response = await fetch(`${GAS_URL}?userId=${profile.userId}&type=pack`);
+        const response = await fetch(`${GAS_URL}?userId=${profile.userId}&type=link`);
         const result = await response.json();
 
         if (result.status === "error") {
