@@ -13,7 +13,6 @@
         :root { --active-blue: #007bff; --navy: #1a2a6c; }
         body { background: #f4f7f6; min-height: 100vh; font-family: 'Kanit', sans-serif; }
         
-        /* Loader เดิมของคุณ */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #ffffff; display: flex; flex-direction: column; 
@@ -26,7 +25,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Card ดีไซน์เดิมของคุณ */
         .reg-card { 
             max-width: 480px; margin: 20px auto; background: #ffffff; 
             padding: 40px 30px; border-radius: 25px; 
@@ -103,7 +101,7 @@
                         <input type="text" id="country" class="form-control readonly-input" value="ประเทศไทย" readonly>
                     </div>
                     <div class="col-12">
-                        <label class="form-label">Platinum</label>
+                        <label class="form-label">Platinum ในสายงาน</label>
                         <input type="text" id="platinum" class="form-control" placeholder="ระบุชื่อ Platinum ในสายงาน">
                     </div>
                 </div>
@@ -115,7 +113,7 @@
     <script src="config.js"></script>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        const provinces = ["กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี"];
+        const provinces = ["กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอย", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี"];
         const pinRank = ["General", "Silver", "Gold", "Platinum", "Emerald", "Diamond"];
         
         let isUpdateMode = false;
@@ -132,7 +130,6 @@
                     document.getElementById('pictureUrlDisplay').src = profile.pictureUrl || '';
                     document.getElementById('userIdDisplay').innerText = profile.userId;
 
-                    // เติมรายชื่อจังหวัดใน Select
                     const selectEl = document.getElementById('province');
                     provinces.forEach(p => {
                         const opt = document.createElement('option');
@@ -140,7 +137,6 @@
                         selectEl.appendChild(opt);
                     });
 
-                    // --- [Logic เช็คสถานะ] ---
                     await fetchUserStatus(profile.userId);
                 }
             } catch (err) { console.error(err); hideLoader(); }
@@ -155,12 +151,11 @@
                     isUpdateMode = true;
                     oldPin = res.data.pin || "General";
                     
-                    // ปรับ UI เป็นโหมดแก้ไข
                     document.getElementById('mainTitle').innerText = "Account Profile";
                     document.getElementById('submitBtn').innerText = "อัปเดตข้อมูล";
                     document.getElementById('pinGroup').style.display = "block";
                     
-                    // หยอดข้อมูลเดิมกลับเข้าไปในช่องต่างๆ
+                    // หยอดข้อมูลเดิมกลับเข้าช่องต่างๆ
                     document.getElementById('nickname').value = res.data.nickname || "";
                     document.getElementById('fullName').value = res.data.fullName || "";
                     document.getElementById('phone').value = res.data.phone || "";
@@ -190,18 +185,16 @@
                 pin: newPin
             };
 
-            // เช็คข้อมูลบังคับ
             if (!data.fullName || !data.phone) {
                 Swal.fire({ title: 'ข้อมูลไม่ครบ', icon: 'warning', customClass: { popup: 'swal-luxury' } });
                 return;
             }
 
             let verifyCode = "";
-            // Logic เช็ค Code ถ้าอัปเกรด PIN
             if (isUpdateMode && pinRank.indexOf(newPin) > pinRank.indexOf(oldPin)) {
                 const { value: code } = await Swal.fire({
                     title: 'ยืนยันการอัปเกรด',
-                    text: `คุณกำลังเปลี่ยนเป็นระดับ ${newPin} กรุณาใส่ Code ยืนยัน`,
+                    text: `ใส่ Code เพื่อเปลี่ยนระดับเป็น ${newPin}`,
                     input: 'text',
                     showCancelButton: true,
                     confirmButtonColor: '#1a2a6c',
@@ -239,10 +232,9 @@
                     liff.closeWindow();
                 }
             } catch (err) {
-                Swal.fire({ title: 'บันทึกสำเร็จ', icon: 'success', timer: 1500 }).then(() => liff.closeWindow());
+                Swal.fire({ title: 'สำเร็จ', icon: 'success', timer: 1500 }).then(() => liff.closeWindow());
             }
         }
-
         initLIFF();
     </script>
 </body>
