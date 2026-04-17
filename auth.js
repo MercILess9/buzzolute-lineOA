@@ -1,4 +1,4 @@
-async function checkAuth(type = "link") {
+async function checkAuth(type) {
   await liff.init({ liffId: LIFF_ID });
 
   if (!liff.isLoggedIn()) {
