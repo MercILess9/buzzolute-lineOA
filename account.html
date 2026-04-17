@@ -23,7 +23,6 @@
             font-family: 'Kanit', sans-serif; 
         }
         
-        /* Premium Loader พร้อมข้อความที่หายไป */
         #loader {
             position: fixed; inset: 0; background: #fff;
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
@@ -51,7 +50,6 @@
         .sub-title { color: #888; font-size: 0.9rem; margin-bottom: 25px; font-weight: 300; }
         .user-id-text { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 35px; }
 
-        /* Icon แบบไม่เอาสี (Monochrome) */
         .form-label { font-weight: 500; color: #555; font-size: 0.85rem; margin-bottom: 8px; }
         .form-label i { color: #555; width: 20px; text-align: center; margin-right: 4px; opacity: 0.7; }
         
@@ -65,17 +63,24 @@
 
         .readonly-input { background-color: #f8fafc !important; color: #94a3b8; cursor: not-allowed; }
         
+        /* 💎 ปุ่มลงทะเบียนแบบ Luxury ใหม่ */
         .btn-submit { 
-            background: linear-gradient(135deg, var(--navy) 0%, #2a3d8f 100%);
-            border: none; border-radius: 16px; 
-            padding: 18px; font-weight: 500; color: white; width: 100%; margin-top: 30px;
-            box-shadow: 0 10px 20px rgba(26, 42, 108, 0.2);
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(135deg, #1a2a6c 0%, #2a3d8f 50%, #1a2a6c 100%);
+            background-size: 200% auto;
+            border: none; border-radius: 20px; 
+            padding: 18px; font-weight: 600; color: white; width: 100%; margin-top: 30px;
+            box-shadow: 0 10px 25px rgba(26, 42, 108, 0.25);
+            transition: 0.5s;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(26, 42, 108, 0.3); }
+        .btn-submit:hover { 
+            background-position: right center;
+            transform: translateY(-2px); 
+            box-shadow: 0 15px 35px rgba(26, 42, 108, 0.4); 
+        }
         .btn-submit:active { transform: scale(0.97); }
 
-        /* Floating Alert */
         .swal2-popup.swal-luxury {
             width: 300px !important; border-radius: 25px !important; padding: 2rem 1.5rem !important;
             box-shadow: 0 15px 50px rgba(0,0,0,0.15) !important;
@@ -161,7 +166,6 @@
         let isUpdateMode = false;
         let oldPin = "General";
 
-        // Phone Auto-hyphen
         document.getElementById('phone').addEventListener('input', function (e) {
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
             e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
