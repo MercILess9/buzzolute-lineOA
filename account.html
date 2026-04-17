@@ -11,42 +11,15 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root { 
-            --active-blue: #007bff; 
-            --navy: #1a2a6c;
-            --error-red: #dc3545;
-            --glass: rgba(255, 255, 255, 0.98);
-        }
-
-        body { 
-            background: linear-gradient(135deg, #f5f7fa 0%, #d6e0f0 100%);
-            min-height: 100vh; 
-            font-family: 'Kanit', sans-serif; 
-        }
+        :root { --active-blue: #007bff; --navy: #1a2a6c; --error-red: #dc3545; --glass: rgba(255, 255, 255, 0.98); }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #d6e0f0 100%); min-height: 100vh; font-family: 'Kanit', sans-serif; }
         
-        #loader {
-            position: fixed; inset: 0; background: #fff;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .spinner {
-            width: 40px; height: 40px; border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--navy); border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin-bottom: 20px;
-        }
+        #loader { position: fixed; inset: 0; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--navy); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .reg-card { 
-            max-width: 500px; margin: 30px auto; background: var(--glass); 
-            padding: 45px 35px; border-radius: 30px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.06); display: none;
-            border: 1px solid rgba(255,255,255,0.5);
-        }
-
-        .profile-img {
-            width: 90px; height: 90px; border-radius: 50%; 
-            margin-bottom: 15px; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
+        .reg-card { max-width: 500px; margin: 30px auto; background: var(--glass); padding: 45px 35px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); display: none; border: 1px solid rgba(255,255,255,0.5); }
+        .profile-img { width: 90px; height: 90px; border-radius: 50%; margin-bottom: 15px; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .header-title { color: var(--navy); font-weight: 600; font-size: 1.7rem; margin-bottom: 2px; }
         .sub-title { color: #888; font-size: 0.9rem; margin-bottom: 25px; font-weight: 300; }
         .user-id-text { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 35px; }
@@ -54,46 +27,27 @@
         .form-label { font-weight: 500; color: #555; font-size: 0.85rem; margin-bottom: 8px; }
         .form-label i { color: #555; width: 20px; text-align: center; margin-right: 4px; opacity: 0.7; }
         
-        .form-control, .form-select { 
-            border-radius: 14px; padding: 13px 18px; border: 1px solid #eef0f3; 
-            font-size: 0.95rem; transition: 0.3s; background: #fcfdfe;
-        }
-        .form-control:focus, .form-select:focus { 
-            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1); border-color: var(--active-blue); background: #fff; outline: none;
-        }
-
+        .form-control, .form-select { border-radius: 14px; padding: 13px 18px; border: 1px solid #eef0f3; font-size: 0.95rem; transition: 0.3s; background: #fcfdfe; }
+        .form-control:focus, .form-select:focus { box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1); border-color: var(--active-blue); background: #fff; outline: none; }
         .invalid-field { border-color: var(--error-red) !important; background-color: #fff8f8 !important; }
-
         .readonly-input { background-color: #f8fafc !important; color: #94a3b8; cursor: not-allowed; }
         
-        /* ปุ่ม Luxury */
         .btn-submit { 
             background: linear-gradient(135deg, #1a2a6c 0%, #2a3d8f 50%, #1a2a6c 100%);
-            background-size: 200% auto;
-            border: none; border-radius: 20px; 
+            background-size: 200% auto; border: none; border-radius: 20px; 
             padding: 18px; font-weight: 600; color: white; width: 100%; margin-top: 30px;
-            box-shadow: 0 10px 25px rgba(26, 42, 108, 0.25);
-            transition: 0.5s; letter-spacing: 1.5px; text-transform: uppercase;
+            box-shadow: 0 10px 25px rgba(26, 42, 108, 0.25); transition: 0.5s; letter-spacing: 1.5px; text-transform: uppercase;
         }
         .btn-submit:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(26, 42, 108, 0.4); }
 
-        /* 💎 Floating Luxury Popup Styles */
-        .swal2-popup.swal-luxury {
-            width: 320px !important; border-radius: 25px !important; padding: 2rem 1rem !important;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.1) !important;
-            backdrop-filter: blur(5px); background: rgba(255,255,255,0.95) !important;
-        }
-        .swal2-title { font-size: 1.15rem !important; color: var(--navy) !important; font-weight: 600 !important; }
-        .swal2-html-container { font-size: 0.9rem !important; color: #666 !important; }
-        .swal2-backdrop-show { background: rgba(0,0,0,0.1) !important; } /* ลดความมืดพื้นหลัง */
-        .swal2-loader { border-color: var(--navy) transparent var(--navy) transparent !important; }
+        .swal-luxury { width: 300px !important; border-radius: 25px !important; backdrop-filter: blur(5px); background: rgba(255,255,255,0.95) !important; }
     </style>
 </head>
 <body>
 
     <div id="loader">
         <div class="spinner"></div>
-        <h5 style="color:var(--navy); margin-bottom: 8px; font-weight: 500; letter-spacing: 1px;">Buzzolute Authentication</h5>
+        <h5 style="color:var(--navy); margin-bottom: 8px; font-weight: 500;">Buzzolute Authentication</h5>
         <p style="color:#aaa; font-weight: 300; font-size: 0.9rem;">Securing your connection...</p>
     </div>
 
@@ -101,58 +55,21 @@
         <div id="form-section" class="reg-card text-center">
             <h3 id="mainTitle" class="header-title">Registration</h3>
             <p class="sub-title">ลงทะเบียนสมาชิก Buzzolute LINE</p>
-            
             <img id="pictureUrlDisplay" src="" class="profile-img">
             <div id="displayNameDisplay" style="font-weight: 600; color: var(--navy); font-size: 1.15rem;">-</div>
             <div id="userIdDisplay" class="user-id-text">-</div>
 
             <div class="text-start">
                 <div class="row g-3">
-                    <div class="col-6">
-                        <label class="form-label"><i class="fa-regular fa-face-smile"></i> ชื่อเล่น</label>
-                        <input type="text" id="nickname" class="form-control validate" placeholder="ระบุชื่อเล่น">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label"><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์</label>
-                        <input type="tel" id="phone" class="form-control validate" placeholder="08x-xxx-xxxx" maxlength="12">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label"><i class="fa-regular fa-address-card"></i> ชื่อ-นามสกุล</label>
-                        <input type="text" id="fullName" class="form-control validate" placeholder="ชื่อจริง-นามสกุล">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label"><i class="fa-regular fa-envelope"></i> Email</label>
-                        <input type="email" id="email" class="form-control validate" placeholder="example@email.com">
-                    </div>
-
-                    <div id="pinGroup" class="col-12" style="display:none;">
-                        <label class="form-label text-primary"><i class="fa-solid fa-crown"></i> ระดับสมาชิก (PIN)</label>
-                        <select id="pin" class="form-select">
-                            <option value="General">General</option>
-                            <option value="Silver">Silver</option>
-                            <option value="Gold">Gold</option>
-                            <option value="Platinum">Platinum</option>
-                            <option value="Emerald">Emerald</option>
-                            <option value="Diamond">Diamond</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label"><i class="fa-solid fa-map-location-dot"></i> จังหวัด</label>
-                        <select id="province" class="form-select validate">
-                            <option value="" selected disabled>เลือกจังหวัด</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label"><i class="fa-solid fa-globe"></i> ประเทศ</label>
-                        <input type="text" id="country" class="form-control readonly-input" value="ประเทศไทย" readonly>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label"><i class="fa-solid fa-star"></i> Platinum ในสายงาน</label>
-                        <input type="text" id="platinum" class="form-control validate" placeholder="ระบุชื่อ Platinum ในสายงาน">
-                    </div>
+                    <div class="col-6"><label class="form-label"><i class="fa-regular fa-face-smile"></i> ชื่อเล่น</label><input type="text" id="nickname" class="form-control validate"></div>
+                    <div class="col-6"><label class="form-label"><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์</label><input type="tel" id="phone" class="form-control validate" maxlength="12"></div>
+                    <div class="col-12"><label class="form-label"><i class="fa-regular fa-address-card"></i> ชื่อ-นามสกุล</label><input type="text" id="fullName" class="form-control validate"></div>
+                    <div class="col-12"><label class="form-label"><i class="fa-regular fa-envelope"></i> Email</label><input type="email" id="email" class="form-control validate"></div>
+                    <div id="pinGroup" class="col-12" style="display:none;"><label class="form-label text-primary"><i class="fa-solid fa-crown"></i> PIN</label><select id="pin" class="form-select"><option value="General">General</option><option value="Silver">Silver</option><option value="Gold">Gold</option><option value="Platinum">Platinum</option><option value="Emerald">Emerald</option><option value="Diamond">Diamond</option></select></div>
+                    <div class="col-12"><label class="form-label"><i class="fa-solid fa-map-location-dot"></i> จังหวัด</label><select id="province" class="form-select validate"><option value="" selected disabled>เลือกจังหวัด</option></select></div>
+                    <div class="col-12"><label class="form-label"><i class="fa-solid fa-globe"></i> ประเทศ</label><input type="text" id="country" class="form-control readonly-input" value="ประเทศไทย" readonly></div>
+                    <div class="col-12"><label class="form-label"><i class="fa-solid fa-star"></i> Platinum ในสายงาน</label><input type="text" id="platinum" class="form-control validate"></div>
                 </div>
-
                 <button onclick="sendData()" id="submitBtn" class="btn btn-submit">ลงทะเบียน</button>
             </div>
         </div>
@@ -163,9 +80,7 @@
     <script>
         const provinces = ["กรุงเทพมหานคร", "กระบี่", "กาญจนบุรี", "กาฬสินธุ์", "กำแพงเพชร", "ขอนแก่น", "จันทบุรี", "ฉะเชิงเทรา", "ชลบุรี", "ชัยนาท", "ชัยภูมิ", "ชุมพร", "เชียงราย", "เชียงใหม่", "ตรัง", "ตราด", "ตาก", "นครนายก", "นครปฐม", "นครพนม", "นครราชสีมา", "นครศรีธรรมราช", "นครสวรรค์", "นนทบุรี", "นราธิวาส", "น่าน", "บึงกาฬ", "บุรีรัมย์", "ปทุมธานี", "ประจวบคีรีขันธ์", "ปราจีนบุรี", "ปัตตานี", "พระนครศรีอยุธยา", "พะเยา", "พังงา", "พัทลุง", "พิจิตร", "พิษณุโลก", "เพชรบุรี", "เพชรบูรณ์", "แพร่", "ภูเก็ต", "มหาสารคาม", "มุกดาหาร", "แม่ฮ่องสอน", "ยโสธร", "ยะลา", "ร้อยเอ็ด", "ระนอง", "ระยอง", "ราชบุรี", "ลพบุรี", "ลำปาง", "ลำพูน", "เลย", "ศรีสะเกษ", "สกลนคร", "สงขลา", "สตูล", "สมุทรปราการ", "สมุทรสงคราม", "สมุทรสาคร", "สระแก้ว", "สระบุรี", "สิงห์บุรี", "สุโขทัย", "สุพรรณบุรี", "สุราษฎร์ธานี", "สุรินทร์", "หนองคาย", "หนองบัวลำภู", "อ่างทอง", "อำนาจเจริญ", "อุดรธานี", "อุตรดิตถ์", "อุทัยธานี", "อุบลราชธานี"];
         const pinRank = ["General", "Silver", "Gold", "Platinum", "Emerald", "Diamond"];
-        
-        let isUpdateMode = false;
-        let oldPin = "General";
+        let isUpdateMode = false; let oldPin = "General";
 
         document.getElementById('phone').addEventListener('input', function (e) {
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
@@ -187,13 +102,8 @@
                     document.getElementById('displayNameDisplay').innerText = profile.displayName;
                     document.getElementById('pictureUrlDisplay').src = profile.pictureUrl || '';
                     document.getElementById('userIdDisplay').innerText = profile.userId;
-
                     const selectEl = document.getElementById('province');
-                    provinces.forEach(p => {
-                        const opt = document.createElement('option');
-                        opt.value = p; opt.innerText = p;
-                        selectEl.appendChild(opt);
-                    });
+                    provinces.forEach(p => { const opt = document.createElement('option'); opt.value = p; opt.innerText = p; selectEl.appendChild(opt); });
                     await fetchUserStatus(profile.userId);
                 }
             } catch (err) { console.error(err); hideLoader(); }
@@ -204,10 +114,8 @@
                 const response = await fetch(`${GAS_URL}?userId=${uID}&type=account`);
                 const res = await response.json();
                 if (res.status === "REGISTERED") {
-                    isUpdateMode = true;
-                    oldPin = res.data.pin || "General";
-                    document.getElementById('mainTitle').innerText = "Registration";
-                    document.getElementById('submitBtn').innerText = "Update"; // เปลี่ยนปุ่มเป็น Update
+                    isUpdateMode = true; oldPin = res.data.pin || "General";
+                    document.getElementById('submitBtn').innerText = "Update";
                     document.getElementById('pinGroup').style.display = "block";
                     document.getElementById('nickname').value = res.data.nickname || "";
                     document.getElementById('fullName').value = res.data.fullName || "";
@@ -215,93 +123,43 @@
                     if(p.length === 10) document.getElementById('phone').value = p.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
                     document.getElementById('email').value = res.data.email || "";
                     document.getElementById('province').value = res.data.province || "";
-                    document.getElementById('platinum').value = res.data.platinum || ""; // 🚩 แก้ไขจุดนี้ให้ Platinum มาแล้ว
+                    document.getElementById('platinum').value = res.data.platinum || "";
                     document.getElementById('pin').value = oldPin;
                 }
             } catch (e) { console.log("New User Mode"); }
             finally { hideLoader(); }
         }
 
-        function hideLoader() {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('form-section').style.display = 'block';
-        }
+        function hideLoader() { document.getElementById('loader').style.display = 'none'; document.getElementById('form-section').style.display = 'block'; }
 
         async function sendData() {
             const phoneRaw = document.getElementById('phone').value.replace(/-/g, '');
             const requiredIds = ['nickname', 'phone', 'fullName', 'email', 'province', 'platinum'];
             let isValid = true;
+            requiredIds.forEach(id => { const el = document.getElementById(id); if (!el.value || (id === 'phone' && phoneRaw.length < 10)) { el.classList.add('invalid-field'); isValid = false; } });
 
-            requiredIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (!el.value || (id === 'phone' && phoneRaw.length < 10)) {
-                    el.classList.add('invalid-field');
-                    isValid = false;
-                }
-            });
-
-            if (!isValid) {
-                Swal.fire({ title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอกข้อมูลในช่องที่กำหนด', icon: 'warning', customClass: { popup: 'swal-luxury' } });
-                return;
-            }
+            if (!isValid) { Swal.fire({ title: 'ข้อมูลไม่ครบ', text: 'กรุณากรอกข้อมูลให้ครบถ้วน', icon: 'warning', customClass: { popup: 'swal-luxury' } }); return; }
 
             const data = {
-                nickname: document.getElementById('nickname').value.trim(),
-                fullName: document.getElementById('fullName').value.trim(),
-                phone: phoneRaw, 
-                email: document.getElementById('email').value.trim(),
-                province: document.getElementById('province').value,
-                platinum: document.getElementById('platinum').value.trim(),
-                pin: document.getElementById('pin').value
+                userId: window.lineData.userId, lineName: window.lineData.displayName, pictureUrl: window.lineData.pictureUrl,
+                nickname: document.getElementById('nickname').value.trim(), fullName: document.getElementById('fullName').value.trim(),
+                phone: phoneRaw, email: document.getElementById('email').value.trim(), province: document.getElementById('province').value,
+                platinum: document.getElementById('platinum').value.trim(), pin: document.getElementById('pin').value, country: "ประเทศไทย"
             };
 
-            let verifyCode = "";
             if (isUpdateMode && pinRank.indexOf(data.pin) > pinRank.indexOf(oldPin)) {
-                const { value: code } = await Swal.fire({
-                    title: 'ยืนยันการอัปเกรด',
-                    input: 'text',
-                    showCancelButton: true,
-                    confirmButtonColor: '#1a2a6c',
-                    customClass: { popup: 'swal-luxury' },
-                    backdrop: `rgba(0,0,0,0.1)`
-                });
-                if (!code) return; 
-                verifyCode = code;
+                const { value: code } = await Swal.fire({ title: 'ยืนยัน PIN', input: 'text', showCancelButton: true, customClass: { popup: 'swal-luxury' } });
+                if (!code) return; data.verifyCode = code;
             }
 
-            // 💎 Floating Loading
+            // --- 🚀 Optimistic Update: แสดงผลทันทีที่กด ---
             Swal.fire({ 
-                title: 'กำลังบันทึก...', 
-                allowOutsideClick: false, 
-                showConfirmButton: false,
-                width: '300px',
-                customClass: { popup: 'swal-luxury' },
-                backdrop: `rgba(0,0,0,0.1)`,
-                didOpen: () => Swal.showLoading() 
-            });
+                title: 'บันทึกสำเร็จ', icon: 'success', showConfirmButton: false, timer: 1000, 
+                customClass: { popup: 'swal-luxury' } 
+            }).then(() => liff.closeWindow());
 
-            const payload = {
-                userId: window.lineData.userId,
-                lineName: window.lineData.displayName,
-                pictureUrl: window.lineData.pictureUrl,
-                verifyCode: verifyCode,
-                ...data,
-                country: "ประเทศไทย"
-            };
-
-            try {
-                const response = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await response.text();
-                if (result === "Success" || result === "Updated") {
-                    await Swal.fire({ icon: 'success', title: 'สำเร็จ!', timer: 1500, showConfirmButton: false, customClass: { popup: 'swal-luxury' } });
-                    liff.closeWindow();
-                } else if (result === "InvalidCode") {
-                    Swal.fire({ icon: 'error', title: 'รหัสไม่ถูกต้อง', customClass: { popup: 'swal-luxury' } });
-                }
-            } catch (err) {
-                Swal.fire({ icon: 'success', title: 'สำเร็จ', timer: 1500, showConfirmButton: false, customClass: { popup: 'swal-luxury' } });
-                setTimeout(() => liff.closeWindow(), 1500);
-            }
+            // บันทึกไปหลังบ้านเงียบๆ (Background Process)
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }).catch(e => console.error(e));
         }
         initLIFF();
     </script>
