@@ -166,20 +166,20 @@
         };
 
         async function init() {
-            try {
-                const auth = await checkAuth(); 
-                if (auth && auth.status === "success") {
-                    MASTER_DATA = auth.data;
-                    renderWheelPicker();
-                    const packs = Object.keys(MASTER_DATA);
-                    if (packs.length > 0) showPack(packs[0]);
-                    document.getElementById('loading').style.display = 'none';
-                    const mainUI = document.getElementById('mainUI');
-                    mainUI.classList.remove('hidden');
-                    setTimeout(() => mainUI.classList.add('opacity-100'), 50);
-                }
-            } catch (err) { console.error(err); }
-        }
+            const auth = await checkAuth("link15");
+
+            if (!auth) return;
+
+            MASTER_DATA = auth.data;
+
+            renderWheelPicker();
+
+            const packs = Object.keys(MASTER_DATA);
+            if (packs.length > 0) showPack(packs[0]);
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('mainUI').classList.remove('hidden');
+            }
 
         // --- Wheel Picker ---
         function togglePicker(isOpen) {
